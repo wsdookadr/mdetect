@@ -15,6 +15,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--<antlr4.visitor>true</antlr4.visitor>-->
+        <!--<antlr4.listener>true</antlr4.listener>-->
     </properties>
 
     <build>
@@ -32,6 +34,63 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <!--
+               -<plugin>
+               -    <groupId>org.antlr</groupId>
+               -    <artifactId>antlr4-maven-plugin</artifactId>
+               -    <version>4.5.3</version>
+               -    <executions>
+               -        <execution>
+               -            <id>antlr</id>
+               -            <goals>
+               -                <goal>antlr4</goal>
+               -            </goals>
+               -        </execution>
+               -    </executions>
+               -</plugin>
+               -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-sources/antlr4</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.5.3</version>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/antlr</sourceDirectory>
+                    <grammars>PHPParser.g4</grammars>
+                    <visitor>true</visitor>
+                    <listener>true</listener>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -144,6 +203,14 @@
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-maven-plugin</artifactId>
+            <!--<version>4.3</version>-->
+            <version>4.5.3</version>
+            <type>maven-plugin</type>
+        </dependency>
+
     </dependencies>
 
     <licenses>
