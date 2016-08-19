@@ -36,11 +36,10 @@ String _htmlNameText;
 boolean _phpScript;
 boolean _insideString;
 
-
-//@Override
-public Token NextToken()
+@Override
+public Token nextToken()
 {
-    CommonToken token = (CommonToken)this.NextToken();
+    CommonToken token = (CommonToken)super.nextToken();
 
     if (token.getType() == PHPEnd || token.getType() == PHPEndSingleLineComment)
     {
@@ -52,7 +51,7 @@ public Token NextToken()
         }
         popMode(); // exit from PHP mode.
         
-        if (token.getText() == "</script>")
+        if (token.getText().equals("</script>"))
         {
             _phpScript = false;
             token = new CommonToken(ScriptClose);
@@ -64,7 +63,7 @@ public Token NextToken()
             if (_prevTokenType == SemiColon || _prevTokenType == Colon
                 || _prevTokenType == OpenCurlyBracket || _prevTokenType == CloseCurlyBracket)
             {
-                token = (CommonToken)this.NextToken();
+                token = (CommonToken)super.nextToken();
             }
             else
             {
@@ -78,8 +77,7 @@ public Token NextToken()
     }
     else if (token.getType() == HtmlDoubleQuoteString)
     {
-        if (token.getText() == "php" &&
-            _htmlNameText == "language")
+        if (token.getText().equals("php") && _htmlNameText.equals("language"))
         {
             _phpScript = true;
         }
@@ -104,7 +102,7 @@ public Token NextToken()
                     }
                     else
                     {
-                        token = (CommonToken)this.NextToken();
+                        token = (CommonToken)super.nextToken();
                     }
                 }
                 break;
@@ -124,9 +122,9 @@ public Token NextToken()
 boolean CheckHeredocEnd(String text)
 {
     text = text.trim();
-    boolean semi = (text.length() > 0) ? (text.charAt(text.length()-1) == ';') : false;
+    boolean semi = (text.length() > 0) ? (text.charAt(text.length() - 1) == ';') : false;
     String identifier = semi ? text.substring(0, text.length() - 1) : text;
-    boolean result = (identifier == _heredocIdentifier);
+    boolean result = identifier.equals(_heredocIdentifier);
     return result;
 }}
 
