@@ -25,10 +25,26 @@ public class Analyzer {
 	 * For example, the most common class/function/method/variable
 	 * names, file sizes and checksums.
 	 * 
-	 * Note: Because Git has already computed hashes of files, we will
-	 * retrieve those and use them.
+	 * Note: We only consider releases (so Git tags).
 	 * 
-	 * Note: The database should store filePath, size, fileChecksum
+	 * Note: Because Git has already computed hashes of 
+	 * 		 files, we will retrieve those and use them.
+	 * 
+	 * Note: The database should have a table like this
+	 * 		 commit, filePath, size, fileChecksum
+	 * 
+	 * Note: The sha1 that Git stores (which is accessible via git ls-files -s)
+	 * 		 is computed on (length, contents)
+	 * 		 http://stackoverflow.com/a/24283352/827519
+	 * 		 http://stackoverflow.com/a/7225329/827519
+	 * 
+	 * Note: 
+	 * 		 Since this is PHP code, we have the source readily available.
+	 * 		 Compared to languages that compile to binaries [1] (for example C)
+	 * 		 where compilers might not produce the same binary for one build,
+	 * 		 the situation here is much better, we can check the source.
+	 * 
+	 * 		 [1] https://reproducible-builds.org/docs/checksums/
 	 * 
 	 */
 	public String dbPath = null;
