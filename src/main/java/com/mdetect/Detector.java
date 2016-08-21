@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import com.mdetect.*;
+import com.mdetect.PHPParser.HtmlDocumentContext;
 
 
 public class Detector {
@@ -17,8 +18,8 @@ public class Detector {
 	 * 
 	 * So far, we want to cover these:
 	 * - does not contain common names from 
-	 *   Joomla/Wordpress/Drupal ; instead contains names 
-	 *   that appear to be random (high) 
+	 *   Joomla/Wordpress/Drupal ; instead contains
+	 * - names that appear to be random (high) 
 	 * - excessive use of chr() (medium)
 	 * - excessive use of ord() (medium)
 	 * - makes use of hex-escaped characters (low)
@@ -28,16 +29,35 @@ public class Detector {
 	 * - presence of eval() (high)
 	 */
 	
+	public float ruleChr() {
+		
+		return 0.0f;
+	}
 	
+	public float ruleOrd() {
+		
+		return 0.0f;
+	}
+	
+	public float ruleHex() {
+		
+		return 0.0f;
+	}
+	
+	public float ruleBase64() {
+		
+		return 0.0f;
+	}
+
     public static ArrayList<String> getAnnotationsFromSyncRequest(String reqBody) {
         ANTLRInputStream input = new ANTLRInputStream(reqBody);
         PHPLexer lexer = new PHPLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PHPParser parser = new PHPParser(tokens);
+
         
-        /*
-        PHPParser.context ctx = parser.getContext();
-        List<String> ruleNames = Arrays.asList(parser.getRuleNames());
+        PHPParser.HtmlDocumentContext ctx = (HtmlDocumentContext) parser.getContext();
+        /*List<String> ruleNames = Arrays.asList(parser.getRuleNames());
         OrgParseTreeConvertor listener = new OrgParseTreeConvertor(ruleNames);
         ParseTree tree = ctx;
         ParseTreeWalker.DEFAULT.walk(listener, tree);
@@ -45,6 +65,8 @@ public class Detector {
         
         ArrayList<String> retval = new ArrayList<String>();
         return retval;
+        
+        
     }
     
 	public Detector() {
