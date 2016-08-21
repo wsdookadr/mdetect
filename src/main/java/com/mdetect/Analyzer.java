@@ -46,6 +46,8 @@ public class Analyzer {
 	 * 
 	 * 		 [1] https://reproducible-builds.org/docs/checksums/
 	 * 
+	 * Note: This does follow a bit the logic of debsums
+	 * 
 	 */
 	public String dbPath = null;
 	public Connection connection = null;
@@ -63,15 +65,16 @@ public class Analyzer {
     }
 
 	/*
-	 * Acquire file hashes, sizes and paths from Git repositories
+	 * Acquire file hashes, sizes and paths from Git repositories.
 	 */
-	void acquireData() {
+	void acquireData(String dirPath) {
 		IOFileFilter gitFilter = FileFilterUtils.notFileFilter(
 				FileFilterUtils.and(
 						FileFilterUtils.directoryFileFilter(),
-						FileFilterUtils.nameFileFilter(".git"))
+						FileFilterUtils.nameFileFilter(".git")
+						)
 				);
-		File dir = new File("dir");
+		File dir = new File(dirPath);
 		try {
 			System.out.println("Getting all files in " + dir.getCanonicalPath() + " including those in subdirectories");
 		} catch (IOException e) {
@@ -86,7 +89,18 @@ public class Analyzer {
 			}
 		}
 	}
-
+	
+	void _do() {
+		/* 
+		 * overview:
+		 * 
+		 * do the work for first tag
+		 * git reset to each other tag
+		 *     see what changed
+		 * 	   get data for what changed
+		 * 	   put it in the db
+		 */
+	}
 
 	/*
 	 * cleans up the entire database.

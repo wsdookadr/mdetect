@@ -19,6 +19,7 @@ import com.mdetect.PHPParser.HtmlDocumentContext;
 
 public class Detector {
 	/*
+	 * 
 	 * Note: The grammar works for PHP up to 5.6
 	 * 
 	 * So far, we want to cover these:
@@ -30,8 +31,37 @@ public class Detector {
 	 * - makes use of hex-escaped characters (low)
 	 * - excessive use of string concatenation (high)
 	 * - long base64 encoded strings (high)
+	 *   whether uninterrupted strings or concatenated
 	 * - use of the base64_decode PHP function (high)
-	 * - presence of eval() (high)
+	 * - presence of eval() (high) relative to other functions
+	 * - one way of checking "unusual" names is to split them
+	 *   up and see if parts of them are in from a dictionary
+	 * - strange variable names can also be considered mixed 
+	 * - case letters followed by at least two numbers
+	 * - excessive use of indexed string values to concatenate another string
+	 * 	 (normally this is quite useless)
+	 * - excessive usage of variable function syntax usage
+	 * 	 (calling a function by using its name stored 
+	 * 	  in a different variable)
+	 *   http://php.net/manual/ro/functions.variable-functions.php
+	 *   or its other form
+	 *   http://php.net/manual/en/function.call-user-func.php
+	 * - no imports whatsoever, IOW self-contained
+	 *   (normally, if a PHP program is a customization or a
+	 *    an extension/plugin of an existing framework, it would have
+	 *    to reuse some of the API, and if it doesn't, we mark that
+	 *    as a red-flag)
+	 * 
+	 * Note: if there is complex tree matching involved, that should
+	 * 		 be done as described in the ANTLR docs
+	 * 		 https://github.com/antlr/antlr4/blob/master/doc/tree-matching.md
+	 * 
+	 * Note: HashSet should be used if we want to check for string belonging to
+	 * 		 sets.
+	 * 
+	 * Will figure out how much of the logic will be in SQL and how much will
+	 * be kept in Java. 
+	 * 
 	 */
 	
 	public float ruleChr() {
@@ -65,8 +95,7 @@ public class Detector {
 	        String ruleName;
 	        if (ruleIndex >= 0 && ruleIndex < ruleNames.size()) {
 	            ruleName = ruleNames.get(ruleIndex);
-	        }
-	        else {
+	        } else {
 	            ruleName = Integer.toString(ruleIndex);
 	        };
 	        return ruleName;
@@ -74,8 +103,8 @@ public class Detector {
 
 	    @Override
 	    public void visitErrorNode(ErrorNode node) {
+	    	
 	    }
-
 
 	    @Override
 	    public void exitEveryRule(ParserRuleContext ctx) { 
@@ -94,13 +123,13 @@ public class Detector {
 	}
 
 	
-    public static ArrayList<String> getAnnotationsFromSyncRequest(String reqBody) {
+    public static ArrayList<String> getPHPAST(String reqBody) {
         ANTLRInputStream input = new ANTLRInputStream(reqBody);
         PHPLexer lexer = new PHPLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PHPParser parser = new PHPParser(tokens);
-
         /* 
+         * 
          * htmlDocument is the root term in the PHP grammar
          * (the grammar in use for this project)
          * 
@@ -112,7 +141,6 @@ public class Detector {
         ParseTree tree = ctx;
         ParseTreeWalker.DEFAULT.walk(listener, tree);
         */
-        
         ArrayList<String> retval = new ArrayList<String>();
         return retval;
     }
