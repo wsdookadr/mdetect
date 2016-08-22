@@ -2,3 +2,4 @@
 data/
 src/main/java/com/mdetect/PHP*java
 src/main/java/com/mdetect/PHP*tokens
+*.tar.gz

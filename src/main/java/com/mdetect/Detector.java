@@ -1,12 +1,15 @@
 package com.mdetect;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
@@ -62,6 +65,9 @@ public class Detector {
 	 * Will figure out how much of the logic will be in SQL and how much will
 	 * be kept in Java. 
 	 * 
+	 * Reference PHP grammar (for the 5.6.25 release)
+	 * https://github.com/php/php-src/blob/e37064dae4a80c70405899bb591969bbe6aad9a8/Zend/zend_language_parser.y
+	 * 
 	 */
 	
 	public float ruleChr() {
@@ -115,6 +121,9 @@ public class Detector {
 	    public void enterEveryRule(ParserRuleContext ctx) { 
 	        String ruleName = extractRuleName(ctx);
 	        // ctx.getText()
+			if (ctx.getText() != null) {
+				System.out.println(ctx.getText());
+			}
 	    }
 	    
 	    @Override
@@ -122,30 +131,51 @@ public class Detector {
 	    }
 	}
 
-	
-    public static ArrayList<String> getPHPAST(String reqBody) {
-        ANTLRInputStream input = new ANTLRInputStream(reqBody);
+	/*
+	 * Returns a Parser object (that contains the AST)
+	 */
+    public static PHPParser parsePHP(String filePath) {
+    	AntlrCaseInsensitiveFileStream input;
+		try {
+			input = new AntlrCaseInsensitiveFileStream(filePath);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
         PHPLexer lexer = new PHPLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PHPParser parser = new PHPParser(tokens);
+        parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
         /* 
          * 
          * htmlDocument is the root term in the PHP grammar
          * (the grammar in use for this project)
          * 
          */
+        
+        /*
+          //this is listener-based matching, we're moving to tree matching
         PHPParser.HtmlDocumentContext ctx = (HtmlDocumentContext) parser.getContext();
         List<String> ruleNames = Arrays.asList(parser.getRuleNames());
-        /*
         SampleTreeListener listener = new SampleTreeListener(ruleNames);
         ParseTree tree = ctx;
         ParseTreeWalker.DEFAULT.walk(listener, tree);
-        */
         ArrayList<String> retval = new ArrayList<String>();
-        return retval;
+        */
+        return parser;
+    }
+    
+    public static void testTreeMatch() {
+    	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
+    	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/sample.php.txt");
+    	PHPParser p = parsePHP("/tmp/a.php.txt");
+    	ParserRuleContext prc = p.htmlDocument();
+    	System.out.println("parsed..");
+    	List<String> ruleNames = Arrays.asList(p.getRuleNames());
+    	//String a1 = prc.getText();
+    	System.out.println(prc.toStringTree(ruleNames));
     }
     
 	public Detector() {
-		
 	}
 }
