@@ -162,17 +162,16 @@ public class Detector {
     	Pair<Parser, Lexer> pl = parsePHP("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
     	PHPParser parser = (PHPParser) pl.a;
     	parser.setBuildParseTree(true);
+    	
         /* 
          * htmlDocument is the start rule for the PHP grammar
          * (the top-level rule)
          */
     	ParserRuleContext tree =   parser.htmlDocument();
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
-
     	
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
     	ParseTreeSerializer ptSerializer = new ParseTreeSerializer(ruleNames, invTokenMap);
-    	
     	
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
     	System.out.println(ptSerializer.getXML());
