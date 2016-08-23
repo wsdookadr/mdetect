@@ -4,17 +4,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.concurrent.TimeUnit;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.atn.PredictionMode;
+import org.antlr.v4.runtime.misc.Pair;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.pattern.ParseTreeMatch;
+import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
+import org.antlr.v4.runtime.tree.xpath.XPath;
 
 import com.mdetect.*;
 import com.mdetect.PHPParser.HtmlDocumentContext;
@@ -46,7 +53,7 @@ public class Detector {
 	 * - excessive usage of variable function syntax usage
 	 * 	 (calling a function by using its name stored 
 	 * 	  in a different variable)
-	 *   http://php.net/manual/ro/functions.variable-functions.php
+	 *   http://php.net/manual/en/functions.variable-functions.php
 	 *   or its other form
 	 *   http://php.net/manual/en/function.call-user-func.php
 	 * - no imports whatsoever, IOW self-contained
@@ -68,6 +75,19 @@ public class Detector {
 	 * Reference PHP grammar (for the 5.6.25 release)
 	 * https://github.com/php/php-src/blob/e37064dae4a80c70405899bb591969bbe6aad9a8/Zend/zend_language_parser.y
 	 * 
+	 * Note: To speed things up, threads will be used to parse the 
+	 * 		 codebase in parallel
+	 * 
+	 * Optional: Maybe also add logic to detect commonly used obfuscators:
+	 * 
+	 * - http://www.pipsomania.com/best_php_obfuscator.do
+	 * - https://github.com/prakharprasad/carbylamine-php-encoder
+	 * - http://sysadmin.cyklodev.com/
+	 * - http://www.joeswebtools.com/security/php-obfuscator/
+	 *  
+	 *  
+	 *  Note: Git-compatible file hash with JGit
+	 *  	  http://stackoverflow.com/a/19789797/827519
 	 */
 	
 	public float ruleChr() {
@@ -134,7 +154,7 @@ public class Detector {
 	/*
 	 * Returns a Parser object (that contains the AST)
 	 */
-    public static PHPParser parsePHP(String filePath) {
+    public static Pair<Parser, Lexer> parsePHP(String filePath) {
     	AntlrCaseInsensitiveFileStream input;
 		try {
 			input = new AntlrCaseInsensitiveFileStream(filePath);
@@ -162,20 +182,54 @@ public class Detector {
         ParseTreeWalker.DEFAULT.walk(listener, tree);
         ArrayList<String> retval = new ArrayList<String>();
         */
-        return parser;
+        
+        Pair<Parser, Lexer> retval = new Pair<Parser, Lexer>(parser, lexer);
+        return retval;
     }
     
-    public static void testTreeMatch() {
+    /*
+     * this function will use the start rule name. it will
+     * then attempt to use xpath in order to find motifs inside
+     * the AST.
+     * 
+     * https://github.com/antlr/antlr4/blob/master/doc/tree-matching.md
+     * https://github.com/antlr/antlr4/blob/master/tool-testsuite/test/org/antlr/v4/test/tool/TestXPath.java
+     * https://github.com/antlr/antlr4/blob/master/runtime-testsuite/test/org/antlr/v4/test/runtime/java/BaseTest.java#L573
+     */
+    public static void findMotif() {
+    	
+    }
+    
+    public static List<String> testTreeMatch() {
     	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
     	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/sample.php.txt");
-    	PHPParser p = parsePHP("/tmp/a.php.txt");
-    	ParserRuleContext prc = p.htmlDocument();
+    	//PHPParser p = parsePHP("/tmp/a.php.txt");
+    	
+    	Pair<Parser, Lexer> pl = parsePHP("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
+    	PHPParser parser = (PHPParser) pl.a;
+    	ParserRuleContext tree =   parser.htmlDocument();
+    	
     	System.out.println("parsed..");
-    	List<String> ruleNames = Arrays.asList(p.getRuleNames());
-    	//String a1 = prc.getText();
-    	System.out.println(prc.toStringTree(ruleNames));
+    	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
+    	//System.out.println(prc.toStringTree(ruleNames));
+    	
+    	System.out.println(tree.toStringTree(ruleNames));
+    	
+    	String strXPath = "//htmlDocument"; // get children of blockStatement
+    	String strTreePattern = "<keyedVariable> <assignmentOperator> <additionExpression>";
+
+
+    	ParseTreePattern treePattern = parser.compileParseTreePattern(strTreePattern, PHPParser.RULE_expression);
+    	List<ParseTreeMatch> parseTreeMatches = treePattern.findAll(tree, "//expression");
+    	System.out.println(parseTreeMatches);
+		
+    	
+    	List<String> results = new ArrayList<String>();
+    	
+    	return results;
     }
     
 	public Detector() {
+		
 	}
 }
