@@ -208,6 +208,11 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>4.4.1.201607150455-r</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>9.7.0-7</version>
+        </dependency>
     </dependencies>
 
     <licenses>

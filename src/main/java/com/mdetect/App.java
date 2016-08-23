@@ -12,7 +12,8 @@ public class App {
 	 */
 
 	 public static void main(String[] args) {
-		Detector.testTreeMatch();
+		 Detector d = new Detector();
+		 d.testTreeMatch();
 	 }
 	 
 	 

@@ -1,11 +1,16 @@
 package com.mdetect;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
@@ -21,9 +26,23 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.antlr.v4.runtime.tree.pattern.ParseTreeMatch;
-import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
-import org.antlr.v4.runtime.tree.xpath.XPath;
+
+import javax.xml.transform.stream.StreamSource;
+import net.sf.saxon.s9api.DocumentBuilder;
+import net.sf.saxon.s9api.Processor;
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.Serializer;
+import net.sf.saxon.s9api.XPathCompiler;
+import net.sf.saxon.s9api.XPathExecutable;
+import net.sf.saxon.s9api.XPathSelector;
+import net.sf.saxon.s9api.XQueryCompiler;
+import net.sf.saxon.s9api.XQueryEvaluator;
+import net.sf.saxon.s9api.XQueryExecutable;
+import net.sf.saxon.s9api.XdmAtomicValue;
+import net.sf.saxon.s9api.XdmItem;
+import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.xpath.XPathEvaluator;
 
 import com.mdetect.*;
 import com.mdetect.PHPParser.HtmlDocumentContext;
@@ -92,30 +111,12 @@ public class Detector {
 	 *  	  http://stackoverflow.com/a/19789797/827519
 	 */
 	
-	public float ruleChr() {
-		
-		return 0.0f;
-	}
-	
-	public float ruleOrd() {
-		
-		return 0.0f;
-	}
-	
-	public float ruleHex() {
-		
-		return 0.0f;
-	}
-	
-	public float ruleBase64() {
-		
-		return 0.0f;
-	}
 
+	Processor xmlProcessor = null;
 	/*
 	 * Returns a Parser object (that contains the AST)
 	 */
-    public static Pair<Parser, Lexer> parsePHP(String filePath) {
+    public  Pair<Parser, Lexer> parsePHP(String filePath) {
     	AntlrCaseInsensitiveFileStream input;
 		try {
 			input = new AntlrCaseInsensitiveFileStream(filePath);
@@ -142,9 +143,10 @@ public class Detector {
      * https://github.com/antlr/antlr4/blob/master/runtime-testsuite/test/org/antlr/v4/test/runtime/java/BaseTest.java#L573
      */
     public static void findMotif() {
+    	
     }
     
-    public static Map<Integer, String> getInvTokenMap(Parser p) {
+    public  Map<Integer, String> getInvTokenMap(Parser p) {
     	Map<String, Integer> tokenMap = p.getTokenTypeMap();
     	Map<Integer, String> invMap = new HashMap<Integer, String>();
     	
@@ -155,10 +157,65 @@ public class Detector {
     	return invMap;
     }
     
-    public static List<String> testTreeMatch() {
+    /*
+     * Receives XML as a string and returns an XdmNode
+     * (we can operate with XPath and XQuery on the XdmNode)
+     */
+    public  XdmNode getXDM(String xmlString) {
+    	XdmNode input;
+    	DocumentBuilder newDocumentBuilder = xmlProcessor.newDocumentBuilder();
+		try {
+			StringReader stringReader = new StringReader(xmlString);
+			// streamSource = new StreamSource(new ByteArrayInputStream(xmlString.getBytes()))
+			StreamSource streamSource = new javax.xml.transform.stream.StreamSource(stringReader);
+			//new StreamSource(new FileInputStream(in))
+			input = newDocumentBuilder.build(streamSource);
+			
+			return input;
+		} catch (SaxonApiException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		};
+		
+		return null;
+ 	}
+    
+    
+    
+    public  List<XdmItem> runXPath(XdmNode xdmDoc, String stringXPath) {
+    	ArrayList<XdmItem> matched = new ArrayList<XdmItem>();
+    	XPathExecutable exec = null;
+    	XPathCompiler xpath = xmlProcessor.newXPathCompiler();
+    	try {
+			exec = xpath.compile(stringXPath);
+			XPathSelector eval = exec.load();
+			eval.setContextItem(xdmDoc);
+			eval.evaluate();
+			Iterator<XdmItem> it = eval.iterator();
+			XdmItem current = null;
+			if (it.hasNext()) {
+				current = it.next();
+			}
+			while (current != null) {
+				matched.add(current);
+				try {
+					current = it.next();
+				} catch (NoSuchElementException ex) {
+					break;
+				}
+			}
+		} catch (SaxonApiException e) {
+			e.printStackTrace();
+		}
+    	return matched;
+    }
+    
+    public  List<String> testTreeMatch() {
     	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
     	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/sample.php.txt");
     	//PHPParser p = parsePHP("/tmp/a.php.txt");
+    	List<String> results = new ArrayList<String>();
     	Pair<Parser, Lexer> pl = parsePHP("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
     	PHPParser parser = (PHPParser) pl.a;
     	parser.setBuildParseTree(true);
@@ -174,14 +231,23 @@ public class Detector {
     	ParseTreeSerializer ptSerializer = new ParseTreeSerializer(ruleNames, invTokenMap);
     	
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
-    	System.out.println(ptSerializer.getXML());
+    	String strXML = ptSerializer.getXML();
+    	XdmNode xdmNode = getXDM(strXML);
+    	if(xdmNode == null) {
+    		return results;
+    	}
     	
-    	List<String> results = new ArrayList<String>();
-    	
+    	List<XdmItem> matched = runXPath(xdmNode, "//functionCall");
+    	for(XdmItem x: matched) {
+    		System.out.println("matched");
+    		//System.out.println(x.toString());
+    	}
     	return results;
     }
     
 	public Detector() {
-		
+		xmlProcessor = new Processor(false);
 	}
+	
+	
 }
