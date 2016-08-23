@@ -13,7 +13,6 @@ public class App {
 
 	 public static void main(String[] args) {
 		Detector.testTreeMatch();
-		System.out.println("test"); 
 	 }
 	 
 	 

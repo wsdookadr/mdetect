@@ -3,7 +3,9 @@ package com.mdetect;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
@@ -110,47 +112,6 @@ public class Detector {
 		return 0.0f;
 	}
 
-	public class SampleTreeListener implements ParseTreeListener {
-	    private final List<String> ruleNames;
-	    public SampleTreeListener(List<String> ruleNames) {
-	        this.ruleNames = ruleNames;
-	    }
-
-	    public String extractRuleName(ParserRuleContext ctx) {
-	        int ruleIndex = ctx.getRuleIndex();
-	        String ruleName;
-	        if (ruleIndex >= 0 && ruleIndex < ruleNames.size()) {
-	            ruleName = ruleNames.get(ruleIndex);
-	        } else {
-	            ruleName = Integer.toString(ruleIndex);
-	        };
-	        return ruleName;
-	    }
-
-	    @Override
-	    public void visitErrorNode(ErrorNode node) {
-	    	
-	    }
-
-	    @Override
-	    public void exitEveryRule(ParserRuleContext ctx) { 
-	        String ruleName = extractRuleName(ctx);
-	    }
-
-	    @Override
-	    public void enterEveryRule(ParserRuleContext ctx) { 
-	        String ruleName = extractRuleName(ctx);
-	        // ctx.getText()
-			if (ctx.getText() != null) {
-				System.out.println(ctx.getText());
-			}
-	    }
-	    
-	    @Override
-	    public void visitTerminal(TerminalNode node) {
-	    }
-	}
-
 	/*
 	 * Returns a Parser object (that contains the AST)
 	 */
@@ -165,24 +126,8 @@ public class Detector {
         PHPLexer lexer = new PHPLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         PHPParser parser = new PHPParser(tokens);
+        /* turn on prediction mode to speed up parsing */
         parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
-        /* 
-         * 
-         * htmlDocument is the root term in the PHP grammar
-         * (the grammar in use for this project)
-         * 
-         */
-        
-        /*
-          //this is listener-based matching, we're moving to tree matching
-        PHPParser.HtmlDocumentContext ctx = (HtmlDocumentContext) parser.getContext();
-        List<String> ruleNames = Arrays.asList(parser.getRuleNames());
-        SampleTreeListener listener = new SampleTreeListener(ruleNames);
-        ParseTree tree = ctx;
-        ParseTreeWalker.DEFAULT.walk(listener, tree);
-        ArrayList<String> retval = new ArrayList<String>();
-        */
-        
         Pair<Parser, Lexer> retval = new Pair<Parser, Lexer>(parser, lexer);
         return retval;
     }
@@ -197,32 +142,40 @@ public class Detector {
      * https://github.com/antlr/antlr4/blob/master/runtime-testsuite/test/org/antlr/v4/test/runtime/java/BaseTest.java#L573
      */
     public static void findMotif() {
+    }
+    
+    public static Map<Integer, String> getInvTokenMap(Parser p) {
+    	Map<String, Integer> tokenMap = p.getTokenTypeMap();
+    	Map<Integer, String> invMap = new HashMap<Integer, String>();
     	
+    	for (String i: tokenMap.keySet()) {
+    		invMap.put(tokenMap.get(i), i);
+    	};
+
+    	return invMap;
     }
     
     public static List<String> testTreeMatch() {
     	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
     	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/sample.php.txt");
     	//PHPParser p = parsePHP("/tmp/a.php.txt");
-    	
     	Pair<Parser, Lexer> pl = parsePHP("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
     	PHPParser parser = (PHPParser) pl.a;
+    	parser.setBuildParseTree(true);
+        /* 
+         * htmlDocument is the start rule for the PHP grammar
+         * (the top-level rule)
+         */
     	ParserRuleContext tree =   parser.htmlDocument();
-    	
-    	System.out.println("parsed..");
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
-    	//System.out.println(prc.toStringTree(ruleNames));
-    	
-    	System.out.println(tree.toStringTree(ruleNames));
-    	
-    	String strXPath = "//htmlDocument"; // get children of blockStatement
-    	String strTreePattern = "<keyedVariable> <assignmentOperator> <additionExpression>";
 
-
-    	ParseTreePattern treePattern = parser.compileParseTreePattern(strTreePattern, PHPParser.RULE_expression);
-    	List<ParseTreeMatch> parseTreeMatches = treePattern.findAll(tree, "//expression");
-    	System.out.println(parseTreeMatches);
-		
+    	
+    	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
+    	ParseTreeSerializer ptSerializer = new ParseTreeSerializer(ruleNames, invTokenMap);
+    	
+    	
+    	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
+    	System.out.println(ptSerializer.getXML());
     	
     	List<String> results = new ArrayList<String>();
     	
