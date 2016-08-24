@@ -9,13 +9,13 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 
-public class ParseTreeSerializer implements ParseTreeListener {
+public class ParseTreeStringSerializer implements ParseTreeListener {
 	private String xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	private String xmlBuffer = "";
 	private Map<Integer, String> invTokenMap = null;
 	
     private final List<String> ruleNames;
-    public ParseTreeSerializer(List<String> ruleNames, Map<Integer, String> invTokenMap) {
+    public ParseTreeStringSerializer(List<String> ruleNames, Map<Integer, String> invTokenMap) {
         this.ruleNames = ruleNames;
         this.invTokenMap = invTokenMap;
         xmlBuffer += xmlHeader + "\n";

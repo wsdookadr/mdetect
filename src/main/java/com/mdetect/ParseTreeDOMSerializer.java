@@ -19,8 +19,6 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
         this.ruleNames = ruleNames;
         this.invTokenMap = invTokenMap;
         xmlBuffer += xmlHeader + "\n";
-        
-        
     }
     
     /*

@@ -159,7 +159,7 @@ public class Detector {
     public  void findMotif() {
     	
     }
-    
+
     /*
      * Inverts a map (K->V to V->K)
      */
@@ -171,7 +171,7 @@ public class Detector {
     	};
     	return invMap;
     }
-    
+
     /*
      * Receives XML as a string and returns an XdmNode
      * (we can operate with XPath and XQuery on the XdmNode)
@@ -239,7 +239,7 @@ public class Detector {
     	ParserRuleContext tree =   parser.htmlDocument();
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
-    	ParseTreeSerializer ptSerializer = new ParseTreeSerializer(ruleNames, invTokenMap);
+    	ParseTreeStringSerializer ptSerializer = new ParseTreeStringSerializer(ruleNames, invTokenMap);
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
     	String strXML = ptSerializer.getXML();
     	//System.out.println(strXML);

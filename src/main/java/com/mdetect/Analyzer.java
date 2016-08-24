@@ -38,11 +38,11 @@ public class Analyzer {
 	 * 		 http://stackoverflow.com/a/24283352/827519
 	 * 		 http://stackoverflow.com/a/7225329/827519
 	 * 
-	 * Note: 
-	 * 		 Since this is PHP code, we have the source readily available.
-	 * 		 Compared to languages that compile to binaries [1] (for example C)
-	 * 		 where compilers might not produce the same binary for one build,
-	 * 		 the situation here is much better, we can check the source.
+	 * Note: Since this is PHP code, we have the source readily available.
+	 * 		 Compared to languages that compile to binaries [1] 
+	 * 		 (for example C or C++) where compilers might not produce the
+	 * 		 same binary for one build, the situation here is much 
+	 * 		 better, we can check the source.
 	 * 
 	 * 		 [1] https://reproducible-builds.org/docs/checksums/
 	 * 
@@ -53,7 +53,7 @@ public class Analyzer {
 	public Connection connection = null;
 	
 	public String dbSchema = "";
-	public  Analyzer() {
+	public Analyzer() {
 		dbPath = "/tmp/sample.db";
         try {
           connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
