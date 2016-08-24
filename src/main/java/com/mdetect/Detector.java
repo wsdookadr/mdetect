@@ -147,14 +147,15 @@ public class Detector {
     	
     }
     
-    public  Map<Integer, String> getInvTokenMap(Parser p) {
+    /*
+     * Inverts a map (K->V to V->K)
+     */
+    public Map<Integer, String> getInvTokenMap(Parser p) {
     	Map<String, Integer> tokenMap = p.getTokenTypeMap();
     	Map<Integer, String> invMap = new HashMap<Integer, String>();
-    	
     	for (String i: tokenMap.keySet()) {
     		invMap.put(tokenMap.get(i), i);
     	};
-
     	return invMap;
     }
     
@@ -169,7 +170,7 @@ public class Detector {
 			StringReader stringReader = new StringReader(xmlString);
 			// streamSource = new StreamSource(new ByteArrayInputStream(xmlString.getBytes()))
 			StreamSource streamSource = new javax.xml.transform.stream.StreamSource(stringReader);
-			//new StreamSource(new FileInputStream(in))
+			// new StreamSource(new FileInputStream(in))
 			input = newDocumentBuilder.build(streamSource);
 			
 			return input;
@@ -214,7 +215,7 @@ public class Detector {
     	return matched;
     }
 
-    public  void loadFile(String filePath) {
+    public void loadFile(String filePath) {
     	Pair<Parser, Lexer> pl = parsePHP(filePath);
     	PHPParser parser = (PHPParser) pl.a;
     	parser.setBuildParseTree(true);
@@ -234,23 +235,21 @@ public class Detector {
     
     public void runChecks() {
     	/* function call counts */
-    	CountMap cFun = new CountMap();
+    	CountMap cFunctions  = new CountMap();
     	/* variable usages */
-    	CountMap cVar = new CountMap();
-    	List<XdmItem> matched = runXPath(xmlDoc, "//functionCall//identifier");
-    	for(XdmItem f: matched) {
+    	CountMap cVariables = new CountMap();
+    	List<XdmItem> matchFunctionCalls = runXPath(xmlDoc, "//functionCall//identifier");
+    	for(XdmItem f: matchFunctionCalls) {
     		String fName = f.getStringValue();
-    		cFun.add(fName);
+    		cFunctions.add(fName);
     	}
-    	
-    	System.out.println(cFun);
+    	System.out.println(cFunctions);
     	
     	
     }
     
 	public Detector() {
 		xmlProcessor = new Processor(false);
-		
 	}
 	
 	
