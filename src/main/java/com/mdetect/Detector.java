@@ -115,6 +115,13 @@ public class Detector {
 	 *  
 	 *  Note: Git-compatible file hash with JGit
 	 *  	  http://stackoverflow.com/a/19789797/827519
+	 *  
+	 *  
+	 *  TODO: Some of the larger files in wordpress contain & and other symbols.	
+	 *  	  Because the serialization is incomplete, Saxon will throw
+	 *  	  exceptions on account of invalid XML.
+	 *  	  Need to fix that either by serializing valid XML, or directly building
+	 *  	  the XML tree. 
 	 */
 	
 
@@ -277,7 +284,7 @@ public class Detector {
                 snodeNext = (XdmNode)iter.next();
                 sbuf += snodeNext.getStringValue().trim();
             }
-    		//System.out.println("["+sbuf+"]");
+    		System.out.println("["+sbuf+"]");
             //TODO: add regex logic to count hexliteralchars
             
     	}

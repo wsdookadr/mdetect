@@ -16,7 +16,9 @@ public class App {
 
 	     //"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
 	     //"/home/user/work/mdetect/samples/sample.php.txt");
-		 d.loadFile("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
+		 //d.loadFile("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
+		 //d.loadFile("/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php");
+		 d.loadFile("/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php");
 		 d.runChecks();
 	 }
 	 
