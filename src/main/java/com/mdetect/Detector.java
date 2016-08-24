@@ -113,6 +113,7 @@ public class Detector {
 	
 
 	Processor xmlProcessor = null;
+	XdmNode xmlDoc = null;
 	/*
 	 * Returns a Parser object (that contains the AST)
 	 */
@@ -142,7 +143,7 @@ public class Detector {
      * https://github.com/antlr/antlr4/blob/master/tool-testsuite/test/org/antlr/v4/test/tool/TestXPath.java
      * https://github.com/antlr/antlr4/blob/master/runtime-testsuite/test/org/antlr/v4/test/runtime/java/BaseTest.java#L573
      */
-    public static void findMotif() {
+    public  void findMotif() {
     	
     }
     
@@ -180,9 +181,11 @@ public class Detector {
 		
 		return null;
  	}
-    
-    
-    
+
+    /*
+     * Run an XPath query on an XML document and return
+     * a list of XdmItem nodes that matched
+     */
     public  List<XdmItem> runXPath(XdmNode xdmDoc, String stringXPath) {
     	ArrayList<XdmItem> matched = new ArrayList<XdmItem>();
     	XPathExecutable exec = null;
@@ -210,43 +213,44 @@ public class Detector {
 		}
     	return matched;
     }
-    
-    public  List<String> testTreeMatch() {
-    	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
-    	//PHPParser p = parsePHP("/home/user/work/mdetect/samples/sample.php.txt");
-    	//PHPParser p = parsePHP("/tmp/a.php.txt");
-    	List<String> results = new ArrayList<String>();
-    	Pair<Parser, Lexer> pl = parsePHP("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
+
+    public  void loadFile(String filePath) {
+    	Pair<Parser, Lexer> pl = parsePHP(filePath);
     	PHPParser parser = (PHPParser) pl.a;
     	parser.setBuildParseTree(true);
-    	
         /* 
          * htmlDocument is the start rule for the PHP grammar
          * (the top-level rule)
          */
     	ParserRuleContext tree =   parser.htmlDocument();
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
-    	
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
     	ParseTreeSerializer ptSerializer = new ParseTreeSerializer(ruleNames, invTokenMap);
-    	
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
     	String strXML = ptSerializer.getXML();
     	XdmNode xdmNode = getXDM(strXML);
-    	if(xdmNode == null) {
-    		return results;
+    	xmlDoc = xdmNode;
+    }
+    
+    public void runChecks() {
+    	/* function call counts */
+    	CountMap cFun = new CountMap();
+    	/* variable usages */
+    	CountMap cVar = new CountMap();
+    	List<XdmItem> matched = runXPath(xmlDoc, "//functionCall//identifier");
+    	for(XdmItem f: matched) {
+    		String fName = f.getStringValue();
+    		cFun.add(fName);
     	}
     	
-    	List<XdmItem> matched = runXPath(xdmNode, "//functionCall");
-    	for(XdmItem x: matched) {
-    		System.out.println("matched");
-    		//System.out.println(x.toString());
-    	}
-    	return results;
+    	System.out.println(cFun);
+    	
+    	
     }
     
 	public Detector() {
 		xmlProcessor = new Processor(false);
+		
 	}
 	
 	

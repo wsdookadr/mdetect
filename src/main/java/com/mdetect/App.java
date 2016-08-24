@@ -13,7 +13,11 @@ public class App {
 
 	 public static void main(String[] args) {
 		 Detector d = new Detector();
-		 d.testTreeMatch();
+
+	     //"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
+	     //"/home/user/work/mdetect/samples/sample.php.txt");
+		 d.loadFile("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
+		 d.runChecks();
 	 }
 	 
 	 
