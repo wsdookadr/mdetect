@@ -249,7 +249,8 @@ public class Detector {
     	CountMap cVarFun  = new CountMap();
     	Integer evalCount = 0;
     	Integer chrCount = 0;
-    	float hexCodeChar = 0;
+    	/* for example \x29 */
+    	float hexLiteralChars = 0;
     	List<XdmItem> matchFunctionCalls = runXPath(xmlDoc, "//functionCall//identifier");
     	for(XdmItem f: matchFunctionCalls) {
     		String fName = f.getStringValue();
@@ -276,7 +277,9 @@ public class Detector {
                 snodeNext = (XdmNode)iter.next();
                 sbuf += snodeNext.getStringValue().trim();
             }
-    		System.out.println("["+sbuf+"]");
+    		//System.out.println("["+sbuf+"]");
+            //TODO: add regex logic to count hexliteralchars
+            
     	}
     	
     }
