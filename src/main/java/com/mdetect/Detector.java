@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
 import java.util.concurrent.TimeUnit;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Parser;
@@ -26,8 +27,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang.StringUtils;
 
 import javax.xml.transform.stream.StreamSource;
+
+import net.sf.saxon.om.Sequence;
+import net.sf.saxon.s9api.Axis;
 import net.sf.saxon.s9api.DocumentBuilder;
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.QName;
@@ -42,6 +47,7 @@ import net.sf.saxon.s9api.XQueryExecutable;
 import net.sf.saxon.s9api.XdmAtomicValue;
 import net.sf.saxon.s9api.XdmItem;
 import net.sf.saxon.s9api.XdmNode;
+import net.sf.saxon.s9api.XdmSequenceIterator;
 import net.sf.saxon.xpath.XPathEvaluator;
 
 import com.mdetect.*;
@@ -229,6 +235,7 @@ public class Detector {
     	ParseTreeSerializer ptSerializer = new ParseTreeSerializer(ruleNames, invTokenMap);
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
     	String strXML = ptSerializer.getXML();
+    	//System.out.println(strXML);
     	XdmNode xdmNode = getXDM(strXML);
     	xmlDoc = xdmNode;
     }
@@ -238,13 +245,39 @@ public class Detector {
     	CountMap cFunctions  = new CountMap();
     	/* variable usages */
     	CountMap cVariables = new CountMap();
+    	/* variable function calls */
+    	CountMap cVarFun  = new CountMap();
+    	Integer evalCount = 0;
+    	Integer chrCount = 0;
+    	float hexCodeChar = 0;
     	List<XdmItem> matchFunctionCalls = runXPath(xmlDoc, "//functionCall//identifier");
     	for(XdmItem f: matchFunctionCalls) {
     		String fName = f.getStringValue();
     		cFunctions.add(fName);
     	}
-    	System.out.println(cFunctions);
-    	
+    	evalCount = cFunctions.getOrDefault("eval", 0);
+    	chrCount = cFunctions.getOrDefault("chr", 0);
+    	List<XdmItem> matchVariableFunctionCalls = runXPath(xmlDoc, "//functionCall//functionCallName//chainBase//keyedVariable");
+    	for(XdmItem f: matchVariableFunctionCalls) {
+    		String k = f.getStringValue();
+    		cVarFun.add(k);
+    	}
+    	/*
+    	 * because <string> can have children like
+    	 * <term> or <interpolatedStringPart> 
+    	 */
+    	List<XdmItem> strings = runXPath(xmlDoc, "//string");
+    	for(XdmItem s: strings) {
+    		String sbuf = "";
+    		XdmNode snode = (XdmNode) s;
+    		XdmSequenceIterator iter = snode.axisIterator(Axis.CHILD);
+    		XdmItem snodeNext = null;
+            while(iter.hasNext()) {
+                snodeNext = (XdmNode)iter.next();
+                sbuf += snodeNext.getStringValue().trim();
+            }
+    		System.out.println("["+sbuf+"]");
+    	}
     	
     }
     
