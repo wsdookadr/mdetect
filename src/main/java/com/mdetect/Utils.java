@@ -40,8 +40,7 @@ public class Utils {
 		Document document = null;
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			document = builder.newDocument(); // Create from whole cloth
-
+			document = builder.newDocument();
 			Element root = (Element) document.createElement("rootElement");
 			document.appendChild(root);
 			root.appendChild(document.createTextNode("Some"));
