@@ -239,6 +239,7 @@ public class Detector {
     	ParserRuleContext tree =   parser.htmlDocument();
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
+    	
     	ParseTreeStringSerializer ptSerializer = new ParseTreeStringSerializer(ruleNames, invTokenMap);
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
     	String strXML = ptSerializer.getXML();
