@@ -15,6 +15,7 @@ public class XmlStore {
 	ClientSession session = null;
 	static BaseXServer server = null;
 	protected static Context context;
+
 	/*
 	 * create database and schema
 	 */
@@ -23,15 +24,15 @@ public class XmlStore {
 			context = new Context();
 			new CreateDB(dbName, "").execute(context);
 			new CreateIndex("fulltext").execute(context);
+			context.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void makeSession() {
 		try {
 			session = new ClientSession("localhost", 1984, "admin", "admin");
-			
 		} catch(Exception e){
 			e.printStackTrace();
 			System.exit(-1);
@@ -47,7 +48,7 @@ public class XmlStore {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void startServer() {
 		try {
 			int serverPort = 1984;
@@ -64,7 +65,7 @@ public class XmlStore {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void stopServer()  {
 		if (server != null) {
 			try {
