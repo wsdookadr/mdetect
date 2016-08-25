@@ -28,6 +28,7 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang.StringUtils;
+import org.w3c.dom.Document;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -239,16 +240,15 @@ public class Detector {
     	ParserRuleContext tree =   parser.htmlDocument();
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
-    	
-    	ParseTreeStringSerializer ptSerializer = new ParseTreeStringSerializer(ruleNames, invTokenMap);
+    	ParseTreeDOMSerializer ptSerializer = new ParseTreeDOMSerializer(ruleNames, invTokenMap);
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
-    	String strXML = ptSerializer.getXML();
-    	//System.out.println(strXML);
-    	XdmNode xdmNode = getXDM(strXML);
-    	xmlDoc = xdmNode;
+    	Document domDocument = ptSerializer.getDOMDocument();
+    	
+    	xmlDoc = Utils.convertDOMToXDM(domDocument);
     }
     
     public void runChecks() {
+    	System.out.println("in runChecks");
     	/* function call counts */
     	CountMap cFunctions  = new CountMap();
     	/* variable usages */
@@ -287,7 +287,6 @@ public class Detector {
             }
     		System.out.println("["+sbuf+"]");
             //TODO: add regex logic to count hexliteralchars
-            
     	}
     	
     }

@@ -15,6 +15,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 
+
+
 public class ParseTreeDOMSerializer implements ParseTreeListener {
 	private Map<Integer, String> invTokenMap = null;
 	private Document xmlDoc = null;
@@ -66,6 +68,7 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
     @Override
     public void exitEveryRule(ParserRuleContext ctx) { 
         String ruleName = extractRuleName(ctx);
+        System.out.println("exit->" + ruleName);
         nodeStack.pop();
     }
 
@@ -73,8 +76,8 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
     public void enterEveryRule(ParserRuleContext ctx) { 
         String ruleName = extractRuleName(ctx);
         Element newNode = (Element) xmlDoc.createElement(ruleName);
+        System.out.println("enter->" + ruleName);
 		if (ctx.getText() != null && ctx.getChildCount() == 0) {
-			//xmlBuffer += ctx.getText() + "\n";
 			newNode.setTextContent(ctx.getText());
 		}
 		nodeStack.peek().appendChild(newNode);
@@ -85,7 +88,7 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
     public void visitTerminal(TerminalNode node) {
     	int nodeType = node.getSymbol().getType();
     	String nodeValue = "TERM_" + invTokenMap.get(nodeType);
-    	
+
     	if(node.getText() != null) {
     		/*
     		 * Avoid special case for end-of-file
@@ -98,6 +101,7 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
     			termValue = "EOF";
     		}
     		Element newNode = (Element) xmlDoc.createElement("term");
+    		System.out.println("enter/exit term");
     		newNode.setTextContent(termValue);
     		nodeStack.peek().appendChild(newNode);
     		nodeStack.push(newNode);

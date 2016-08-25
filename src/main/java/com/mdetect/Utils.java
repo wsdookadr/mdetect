@@ -20,7 +20,6 @@ public class Utils {
 		DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
 		LSSerializer lsSerializer = domImplementation.createLSSerializer();
 		return lsSerializer.writeToString(doc);
-
 		/*
 		DOMImplementationRegistry registry;
 		try {
@@ -59,20 +58,21 @@ public class Utils {
 		}
 		return document;
 	}
+	
+	
 	/*
+	 * 
 	 * Convert a 
 	 * 	 org.w3c.dom.Document =>
 	 *   net.sf.saxon.dom.DocumentWrapper =>
 	 *   net.sf.saxon.s9api.XdmNode
 	 * 
 	 */
-	public static XdmNode convertDOMToXDM(Document doc) {
-		 Document dom = Utils.buildTestDOM();
+	public static XdmNode convertDOMToXDM(Document dom) {
 		 if(dom == null) {
 			 System.out.println("document is null");
 			 return null;
 		 }
-		 System.out.println(Utils.serializeDOMDocument(dom));
 		 Processor proc = new Processor(false);
 		 Configuration config = proc.getUnderlyingConfiguration(); 
 		 config.registerExternalObjectModel(new DOMObjectModel());
