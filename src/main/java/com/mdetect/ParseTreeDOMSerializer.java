@@ -38,7 +38,6 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
 			nodeStack.push(root);
 			xmlDoc = document;
 		} catch (Exception pce) {
-			// Parser with specified options can't be built
 			pce.printStackTrace();
 		}
     }

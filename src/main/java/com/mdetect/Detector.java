@@ -205,11 +205,14 @@ public class Detector {
     	ArrayList<XdmItem> matched = new ArrayList<XdmItem>();
     	XPathExecutable exec = null;
     	XPathCompiler xpath = xmlProcessor.newXPathCompiler();
+    	
     	try {
 			exec = xpath.compile(stringXPath);
+			
 			XPathSelector eval = exec.load();
 			eval.setContextItem(xdmDoc);
 			eval.evaluate();
+			
 			Iterator<XdmItem> it = eval.iterator();
 			XdmItem current = null;
 			if (it.hasNext()) {

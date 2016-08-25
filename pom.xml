@@ -218,6 +218,14 @@
             <artifactId>pgjdbc-ng</artifactId>
             <version>0.6</version>
         </dependency>
+        <dependency>
+            <artifactId>org.basex</artifactId>
+            <groupId>basex</groupId>
+            <scope>system</scope>
+            <version>8.5.3</version>
+            <systemPath>${basedir}/deps/BaseX853.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
     <licenses>
