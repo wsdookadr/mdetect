@@ -1,7 +1,15 @@
 package com.mdetect;
 
+import java.io.StringWriter;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,10 +24,44 @@ import net.sf.saxon.s9api.XdmNode;
 
 public class Utils {
 	
+	/*
+	 * serialize Document
+	 */
 	public static String serializeDOMDocument(org.w3c.dom.Document doc) {
+		/*
 		DOMImplementationLS domImplementation = (DOMImplementationLS) doc.getImplementation();
 		LSSerializer lsSerializer = domImplementation.createLSSerializer();
-		return lsSerializer.writeToString(doc);
+		String bodyXML = lsSerializer.writeToString(doc);
+		return bodyXML;
+		*/
+				
+		//DocumentBuilderFactory domFact = DocumentBuilderFactory.newInstance();
+		//DocumentBuilder builder = domFact.newDocumentBuilder();
+		//Document doc = builder.parse(st);
+		
+		
+		DOMSource domSource = new DOMSource(doc);
+		StringWriter writer = new StringWriter();
+		StreamResult result = new StreamResult(writer);
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = null;
+		try {
+			transformer = tf.newTransformer();
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+			return null;
+		}
+		try {
+			transformer.transform(domSource, result);
+		} catch (TransformerException e) {
+			e.printStackTrace();
+			return null;
+		}
+		String xmlString = writer.toString();
+		return xmlString;
+		
+		
+		
 		/*
 		DOMImplementationRegistry registry;
 		try {

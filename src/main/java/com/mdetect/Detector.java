@@ -128,6 +128,7 @@ public class Detector {
 
 	Processor xmlProcessor = null;
 	XdmNode xmlDoc = null;
+	Document domDoc = null;
 	/*
 	 * Returns a Parser object (that contains the AST)
 	 */
@@ -245,9 +246,14 @@ public class Detector {
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
     	ParseTreeDOMSerializer ptSerializer = new ParseTreeDOMSerializer(ruleNames, invTokenMap);
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
-    	Document domDocument = ptSerializer.getDOMDocument();
-    	
-    	xmlDoc = Utils.convertDOMToXDM(domDocument);
+    	/*
+    	 * get the XML document in both formats
+    	 * org.w3c.dom.Document and
+    	 * net.sf.saxon.s9api.XdmNode
+    	 * 
+    	 */
+    	domDoc = ptSerializer.getDOMDocument();
+    	//xmlDoc = Utils.convertDOMToXDM(domDoc);
     }
     
     public void runChecks() {
