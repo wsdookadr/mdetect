@@ -11,6 +11,7 @@ import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,10 +45,14 @@ public class App {
 		// Document w = Utils.buildTestDOM();
 		Document w = d.domDoc;
 		try {
-			System.out.println(Utils.serializeDOMDocument(w));
+			//System.out.println(Utils.serializeDOMDocument(w));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		XmlStore xstore = new XmlStore();
+		xstore.add("from-app", Utils.serializeDOMDocument(w));
+		xstore.stopServer();
 	 }
 	 
 	 
