@@ -40,32 +40,25 @@ public class App {
 
 	 public static void main(String[] args) {
 		Detector d = new Detector();
-		//d.loadFile("/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
-		d.loadFile("/home/user/work/mdetect/samples/sample.php.txt");
-		//d.loadFile("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
-		//d.loadFile("/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php");
-		//d.loadFile("/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php");
-		//d.runChecks();
-		//Document w = Utils.buildTestDOM();
-		Document w = d.domDoc;
-		try {
-			//System.out.println(Utils.serializeDOMDocument(w));
-		} catch (Exception e) {
-			e.printStackTrace();
+		XmlStore xstore = new XmlStore();
+		String paths[] = {
+				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt",
+				"/home/user/work/mdetect/samples/sample.php.txt",
+				"/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected",
+				"/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php",
+				"/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php",
+				"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
+				"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
+		};
+		
+		for(String path: paths) {
+			Utils.processAndStore(path, d, xstore);
 		}
 
-		String contentsToInsert = Utils.serializeDOMDocument(w);
-		System.out.println(contentsToInsert);
-		XmlStore xstore = new XmlStore();
-		xstore.createDB();
-		//xstore.query("flush");
-		xstore.add("from-app", contentsToInsert);
-		//xstore.query("flush");
 		try {
 			String xqs = "db:open('xtrees')//functionCall//identifier//text()";
 			String result = xstore.query(xqs);
-			
-			System.out.println(result);
+			//System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

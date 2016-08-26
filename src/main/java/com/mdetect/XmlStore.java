@@ -43,12 +43,24 @@ public class XmlStore {
 			System.exit(-1);
 		}
 	}
-
-	public void add(String xmlKey, String xmlString) {
+	
+	/*
+	 * Adds an XML document to the XML store.
+	 * The replaceExisting parameter indicates if it's
+	 * desirable to only have one such document per key
+	 * in the store
+	 * (for more details
+	 * 	see https://mailman.uni-konstanz.de/pipermail/basex-talk/2011-July/001823.html) 
+	 * 
+	 */
+	public void add(String xmlKey, String xmlString, boolean replaceExisting) {
 		try {
 			session.execute("OPEN " + dbName);
 			//session.query("CHECK " + dbName + "; SET DTD false;");
 			InputStream is = new ByteArrayInputStream(xmlString.getBytes());
+			if (replaceExisting) {
+				session.execute("DELETE /" + xmlKey);
+			}
 			session.add("/"+xmlKey, is);
 		} catch (Exception e) {
 			e.printStackTrace();
