@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Usage: rlwrap ./basexclient -U admin -P admin -p 1984
 
 # Path to this script
 FILE="${BASH_SOURCE[0]}"

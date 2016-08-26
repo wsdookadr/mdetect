@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Usage: ./basexserver
+
 # Path to this script
 FILE="${BASH_SOURCE[0]}"
 while [ -h "$FILE" ] ; do
