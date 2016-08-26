@@ -7,6 +7,7 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.basex.query.QueryException;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
 
@@ -32,17 +33,20 @@ public class App {
 	 * a series of metrics will be computed on them. After that, a 
 	 * set of rules would mark some of them as being suspicious.
 	 * 
+	 * 
+	 * Raising the stack limit is necessary because of serializing
+	 * very nested structures ( -Xss3m ).
 	 */
 
 	 public static void main(String[] args) {
 		Detector d = new Detector();
-		d.loadFile("/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
-		// d.loadFile("/home/user/work/mdetect/samples/sample.php.txt");
-		// d.loadFile("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
-		// d.loadFile("/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php");
-		// d.loadFile("/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php");
-		// d.runChecks();
-		// Document w = Utils.buildTestDOM();
+		//d.loadFile("/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt");
+		d.loadFile("/home/user/work/mdetect/samples/sample.php.txt");
+		//d.loadFile("/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected");
+		//d.loadFile("/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php");
+		//d.loadFile("/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php");
+		//d.runChecks();
+		//Document w = Utils.buildTestDOM();
 		Document w = d.domDoc;
 		try {
 			//System.out.println(Utils.serializeDOMDocument(w));
@@ -50,8 +54,21 @@ public class App {
 			e.printStackTrace();
 		}
 
+		String contentsToInsert = Utils.serializeDOMDocument(w);
+		System.out.println(contentsToInsert);
 		XmlStore xstore = new XmlStore();
-		xstore.add("from-app", Utils.serializeDOMDocument(w));
+		xstore.createDB();
+		//xstore.query("flush");
+		xstore.add("from-app", contentsToInsert);
+		//xstore.query("flush");
+		try {
+			String xqs = "db:open('xtrees')//functionCall//identifier//text()";
+			String result = xstore.query(xqs);
+			
+			System.out.println(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		xstore.stopServer();
 	 }
 	 
