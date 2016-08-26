@@ -38,7 +38,8 @@ public class App {
 	 * very nested structures ( -Xss3m ).
 	 */
 
-	 public static void main(String[] args) {
+	 public static void main(String[] args) {	
+		/*
 		Detector d = new Detector();
 		XmlStore xstore = new XmlStore();
 		String paths[] = {
@@ -50,11 +51,9 @@ public class App {
 				"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
 				"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
 		};
-		
 		for(String path: paths) {
 			Utils.processAndStore(path, d, xstore);
 		}
-
 		try {
 			String xqs = "db:open('xtrees')//functionCall//identifier//text()";
 			String result = xstore.query(xqs);
@@ -62,7 +61,16 @@ public class App {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		xstore.stopServer();
+		*/
+		
+		TaskQueue<String> tq = new TaskQueue<String>(4,50);
+		for(int j=0;j<1000;j++) {
+			tq.produce("task " + j);	
+		}
+		
+		tq.waitToComplete();
+		
+		//xstore.stopServer();
 	 }
 	 
 	 
