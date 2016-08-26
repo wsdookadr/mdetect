@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Path to this script
+FILE="${BASH_SOURCE[0]}"
+while [ -h "$FILE" ] ; do
+  SRC="$(readlink "$FILE")"
+  FILE="$( cd -P "$(dirname "$FILE")" && \
+           cd -P "$(dirname "$SRC")" && pwd )/$(basename "$SRC")"
+done
+BX="$( cd -P "$(dirname "$FILE")/.." && pwd )"
+# Core and library classes
+CP="$(printf ":%s" "$BX/deps/"*.jar):$CLASSPATH"
+
+
+
+BASEX_JVM="-Xmx512m $BASEX_JVM"
+
+# Run code
+java -cp "$CP" $BASEX_JVM org.basex.BaseXClient "$@"
