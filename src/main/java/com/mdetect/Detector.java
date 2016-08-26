@@ -233,7 +233,7 @@ public class Detector {
     	return matched;
     }
 
-    public void loadFile(String filePath) {
+    public void processFile(String filePath) {
     	Pair<Parser, Lexer> pl = parsePHP(filePath);
     	PHPParser parser = (PHPParser) pl.a;
     	parser.setBuildParseTree(true);

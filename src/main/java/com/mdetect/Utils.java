@@ -115,7 +115,7 @@ public class Utils {
 	}
 
 	public static void processAndStore(String filePath, Detector d, XmlStore xstore) {
-		d.loadFile(filePath);
+		d.processFile(filePath);
 		Document w = d.domDoc;
 		String contentsToInsert = "";
 		try {

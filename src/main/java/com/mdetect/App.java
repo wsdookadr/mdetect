@@ -38,19 +38,31 @@ public class App {
 	 * very nested structures ( -Xss3m ).
 	 */
 
-	 public static void main(String[] args) {	
-		/*
+	 public static void main(String[] args) {
 		Detector d = new Detector();
 		XmlStore xstore = new XmlStore();
-		String paths[] = {
-				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt",
-				"/home/user/work/mdetect/samples/sample.php.txt",
-				"/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected",
-				"/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php",
-				"/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php",
-				"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
-				"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
+		/*
+		 * small test .php files (between 20kb and 50kb)
+		 * find data/ -name "*.php" -size +20000c -a -size -50000c
+		 * 
+		 */
+		String smallerTestFiles[] = {
+				"data/drupal/core/modules/system/src/Controller/DbUpdateController.php",
+				"data/drupal/core/tests/Drupal/Tests/Core/Entity/Sql/SqlContentEntityStorageTest.php",
+				"data/drupal/core/lib/Drupal/Core/Database/Driver/pgsql/Schema.php",
+				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt"
 		};
+		
+		String largerTestFiles[] = {
+				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt",
+				//"/home/user/work/mdetect/samples/sample.php.txt",
+				"/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected",
+				//"/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php",
+				"/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php",
+				//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
+				//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
+		};
+		/*
 		for(String path: paths) {
 			Utils.processAndStore(path, d, xstore);
 		}
@@ -63,14 +75,16 @@ public class App {
 		}
 		*/
 		
-		TaskQueue<String> tq = new TaskQueue<String>(4,50);
-		for(int j=0;j<1000;j++) {
-			tq.produce("task " + j);	
+		String testFiles[] = smallerTestFiles;
+		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(2,1000);
+		for(int j=0;j<testFiles.length;j++) {
+			System.out.println("producing task " + testFiles[j]);
+			tq.produce(testFiles[j]);	
 		}
+		tq.shutdown();
+		xstore.stopServer();
 		
-		tq.waitToComplete();
-		
-		//xstore.stopServer();
+		System.exit(0);
 	 }
 	 
 	 
