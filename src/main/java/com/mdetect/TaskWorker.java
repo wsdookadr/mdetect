@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TaskWorker<I, O> implements Runnable {
     private final BlockingQueue<I> workQueue;
-    private final ConcurrentLinkedQueue<O> resultQueue;
+    protected ConcurrentLinkedQueue<O> resultQueue;
     protected int workerId = 0;
     public TaskWorker(BlockingQueue<I> workQueue, ConcurrentLinkedQueue<O> resultQueue, int i) {
         this.workQueue = workQueue;

@@ -1,5 +1,7 @@
 package com.mdetect;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -19,7 +21,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class AnalyzeTaskQueue {
     private final BlockingQueue<String> workQueue;
     private final ExecutorService service;
-    private final ConcurrentLinkedQueue<Document> resultQueue;
+    private final XmlStore xstore;
+    public final ConcurrentLinkedQueue<ParseTreeDTO> resultQueue;
     /*
      * The task queue uses a blocking work queue with a maximum size
      * (if the queue has reached maximum capacity, it will block
@@ -30,9 +33,10 @@ public class AnalyzeTaskQueue {
      * from the queue at any given time.
      * 
      */
-    public AnalyzeTaskQueue(int numActiveParallelWorkers, int queueCapacity) {
+    public AnalyzeTaskQueue(int numActiveParallelWorkers, int queueCapacity, XmlStore xstore) {
+    	this.xstore = xstore;
         workQueue = new LinkedBlockingQueue<String>(queueCapacity);
-        resultQueue = new ConcurrentLinkedQueue<Document>();
+        resultQueue = new ConcurrentLinkedQueue<ParseTreeDTO>();
         service = Executors.newFixedThreadPool(numActiveParallelWorkers);
         //service = Executors.newCachedThreadPool();
         
@@ -66,10 +70,8 @@ public class AnalyzeTaskQueue {
 			}
     	}
     	
-    	
     	System.out.println("shutdown..");
     	service.shutdown();
-    	
     	System.out.println("queue size = " + workQueue.size());
     	
     	/*
@@ -79,16 +81,42 @@ public class AnalyzeTaskQueue {
     	 * for them without cause.
     	 * 
     	 */
-    	
     	try {
 			service.awaitTermination(5, TimeUnit.SECONDS);
-    		
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
     	System.out.println("after await");
-    	
-    	
     }
+    
+    /*
+     * Drain all existing processed results
+     * into a list and return it.
+     */
+    public ArrayList<ParseTreeDTO > retrieveResults() {
+    	ArrayList<ParseTreeDTO > r = new ArrayList<ParseTreeDTO >();
+    	System.out.println("results fetched -> " + resultQueue.size());
+    	while(!resultQueue.isEmpty()) {
+    		r.add(resultQueue.remove());
+    	}
+    	
+    	return r;
+    }
+    
+    public void storePartialResults() {
+		ArrayList<ParseTreeDTO > processed = retrieveResults();
+		if(processed.size() > 0 ){
+			for(ParseTreeDTO p: processed) {
+				String contentsToInsert = "";
+				try {
+					contentsToInsert = Utils.serializeDOMDocument(p.getD());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				xstore.add(p.getFilePath(), contentsToInsert,true);
+			}
+		}
+    }
+    
 
 }

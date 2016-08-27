@@ -13,6 +13,7 @@ import org.w3c.dom.Document;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,18 +42,20 @@ public class App {
 	 public static void main(String[] args) {
 		Detector d = new Detector();
 		XmlStore xstore = new XmlStore();
+		xstore.createDB();
+
 		/*
 		 * small test .php files (between 20kb and 50kb)
 		 * find data/ -name "*.php" -size +20000c -a -size -50000c
 		 * 
 		 */
 		String smallerTestFiles[] = {
-				"data/drupal/core/modules/system/src/Controller/DbUpdateController.php",
-				"data/drupal/core/tests/Drupal/Tests/Core/Entity/Sql/SqlContentEntityStorageTest.php",
-				"data/drupal/core/lib/Drupal/Core/Database/Driver/pgsql/Schema.php",
+				"/home/user/work/mdetect/data/drupal/core/modules/system/src/Controller/DbUpdateController.php",
+				"/home/user/work/mdetect/data/drupal/core/tests/Drupal/Tests/Core/Entity/Sql/SqlContentEntityStorageTest.php",
+				"/home/user/work/mdetect/data/drupal/core/lib/Drupal/Core/Database/Driver/pgsql/Schema.php",
 				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt"
 		};
-		
+
 		String largerTestFiles[] = {
 				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt",
 				//"/home/user/work/mdetect/samples/sample.php.txt",
@@ -62,28 +65,18 @@ public class App {
 				//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
 				//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
 		};
-		/*
-		for(String path: paths) {
-			Utils.processAndStore(path, d, xstore);
-		}
-		try {
-			String xqs = "db:open('xtrees')//functionCall//identifier//text()";
-			String result = xstore.query(xqs);
-			//System.out.println(result);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		*/
-		
+
 		String testFiles[] = smallerTestFiles;
-		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(2,1000);
+		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(2,1000,xstore);
 		for(int j=0;j<testFiles.length;j++) {
 			System.out.println("producing task " + testFiles[j]);
-			tq.produce(testFiles[j]);	
+			tq.produce(testFiles[j]);
+			tq.storePartialResults();
 		}
+		tq.storePartialResults();
 		tq.shutdown();
+		tq.storePartialResults();
 		XmlStore.stopServer();
-		
 		System.exit(0);
 	 }
 	 
