@@ -56,7 +56,6 @@ public class App {
 				"/home/user/work/mdetect/data/drupal/core/lib/Drupal/Core/Database/Driver/pgsql/Schema.php",
 				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt"
 		};
-
 		String largerTestFiles[] = {
 				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt",
 				//"/home/user/work/mdetect/samples/sample.php.txt",
@@ -66,8 +65,9 @@ public class App {
 				//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
 				//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
 		};
-		List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
 		
+		/*
+		List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
 		ArrayList<String> testFiles = (ArrayList<String>) completeList;
 		int analyzeQueueCapacity = 1000;
 		int analyzeWorkers = 5;
@@ -81,6 +81,10 @@ public class App {
 		tq.storePartialResultsInXMLStore();
 		tq.shutdown();
 		tq.storePartialResultsInXMLStore();
+		*/
+		a.findGitRepos("/home/user/work/mdetect/data");
+		
+		
 		XmlStore.stopServer();
 		System.exit(0);
 	 }

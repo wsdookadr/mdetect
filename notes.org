@@ -1,7 +1,5 @@
 
 
-
-
 #+BEGIN_SRC sh :results raw drawer
 #!/bin/sh
 cd /home/user/work/mdetect/deps;
@@ -13,82 +11,8 @@ echo 'OPEN xtrees; SET XMLPLAN true; XQUERY (//functionCall//identifier)[positio
 :RESULTS:
 BaseX 8.5.3 [Client]
 Try 'help' to get more information.
-> Database 'xtrees' was opened in 2.6 ms.
-XMLPLAN: true
-<identifier>
-  <term>define</term>
-</identifier>
-<identifier>
-  <term>require</term>
-</identifier>
-<identifier>
-  <term>dirname</term>
-</identifier>
-<identifier>
-  <term>define</term>
-</identifier>
-<identifier>
-  <term>array</term>
-</identifier>
-<identifier>
-  <term>isset</term>
-</identifier>
-<identifier>
-  <term>file_get_contents</term>
-</identifier>
-<identifier>
-  <term>isset</term>
-</identifier>
-<identifier>
-  <term>trim</term>
-</identifier>
-<identifier>
-  <term>include</term>
-</identifier>
-<identifier>
-  <term>dirname</term>
-</identifier>
-<identifier>
-  <term>isset</term>
-</identifier>
-<identifier>
-  <term>header</term>
-</identifier>
-<identifier>
-  <term>get_option</term>
-</identifier>
-<identifier>
-  <term>get_option</term>
-</identifier>
-<identifier>
-  <term>bloginfo_rss</term>
-</identifier>
-<identifier>
-  <term>site_url</term>
-</identifier>
-<identifier>
-  <term>site_url</term>
-</identifier>
-<identifier>
-  <term>site_url</term>
-</identifier>
-<identifier>
-  <term>site_url</term>
-</identifier>
-Query plan:
-<QueryPlan compiled="true">
-  <UtilItemRange name="item-range(items,first,last)">
-    <CachedPath>
-      <Root/>
-      <IterStep axis="descendant" test="*:functionCall"/>
-      <IterStep axis="descendant" test="*:identifier"/>
-    </CachedPath>
-    <Int value="1" type="xs:integer"/>
-    <Int value="20" type="xs:integer"/>
-  </UtilItemRange>
-</QueryPlan>
-
-Query executed in 1891.75 ms.
+> 0D65185C9E296311C0A2200179E479A2
+Query executed in 0.52 ms.
 > 
 :END:
 
