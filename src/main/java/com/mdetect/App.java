@@ -71,11 +71,11 @@ public class App {
 		for(int j=0;j<testFiles.length;j++) {
 			System.out.println("producing task " + testFiles[j]);
 			tq.produce(testFiles[j]);
-			tq.storePartialResults();
+			tq.storePartialResultsInXMLStore();
 		}
-		tq.storePartialResults();
+		tq.storePartialResultsInXMLStore();
 		tq.shutdown();
-		tq.storePartialResults();
+		tq.storePartialResultsInXMLStore();
 		XmlStore.stopServer();
 		System.exit(0);
 	 }

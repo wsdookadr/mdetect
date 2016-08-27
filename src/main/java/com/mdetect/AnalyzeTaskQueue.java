@@ -93,20 +93,21 @@ public class AnalyzeTaskQueue {
      * Drain all existing processed results
      * into a list and return it.
      */
-    public ArrayList<ParseTreeDTO > retrieveResults() {
-    	ArrayList<ParseTreeDTO > r = new ArrayList<ParseTreeDTO >();
-    	System.out.println("results fetched -> " + resultQueue.size());
+    private ArrayList<ParseTreeDTO > retrieveResults() {
+    	ArrayList<ParseTreeDTO > retrieved = new ArrayList<ParseTreeDTO >();
     	while(!resultQueue.isEmpty()) {
-    		r.add(resultQueue.remove());
+    		retrieved.add(resultQueue.remove());
     	}
-    	
-    	return r;
+    	return retrieved;
     }
     
-    public void storePartialResults() {
-		ArrayList<ParseTreeDTO > processed = retrieveResults();
-		if(processed.size() > 0 ){
-			for(ParseTreeDTO p: processed) {
+    /*
+     * Retrieve partial results and store them in xml database.
+     */
+    public void storePartialResultsInXMLStore() {
+		ArrayList<ParseTreeDTO > retrieved = retrieveResults();
+		if(retrieved.size() > 0 ){
+			for(ParseTreeDTO p: retrieved) {
 				String contentsToInsert = "";
 				try {
 					contentsToInsert = Utils.serializeDOMDocument(p.getD());
