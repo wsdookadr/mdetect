@@ -81,7 +81,7 @@ public class AnalyzeTaskQueue {
     	 */
     	
     	try {
-			service.awaitTermination(6, TimeUnit.SECONDS);
+			service.awaitTermination(5, TimeUnit.SECONDS);
     		
 		} catch (InterruptedException e) {
 			e.printStackTrace();

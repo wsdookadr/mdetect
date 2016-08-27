@@ -82,7 +82,7 @@ public class App {
 			tq.produce(testFiles[j]);	
 		}
 		tq.shutdown();
-		xstore.stopServer();
+		XmlStore.stopServer();
 		
 		System.exit(0);
 	 }
