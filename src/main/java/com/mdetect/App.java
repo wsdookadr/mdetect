@@ -14,6 +14,7 @@ import org.w3c.dom.Document;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,6 +41,7 @@ public class App {
 	 */
 
 	 public static void main(String[] args) {
+		Analyzer a = new Analyzer();
 		Detector d = new Detector();
 		XmlStore xstore = new XmlStore();
 		xstore.createDB();
@@ -64,16 +66,18 @@ public class App {
 				//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
 				//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
 		};
-
-		String testFiles[] = smallerTestFiles;
+		List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
+		
+		ArrayList<String> testFiles = (ArrayList<String>) completeList;
 		int analyzeQueueCapacity = 1000;
-		int analyzeWorkers = 2;
+		int analyzeWorkers = 5;
 		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers,analyzeQueueCapacity,xstore);
-		for(int j=0;j<testFiles.length;j++) {
-			System.out.println("producing task " + testFiles[j]);
-			tq.produce(testFiles[j]);
+		for(int j=0;j<testFiles.size();j++) {
+			System.out.println("producing task " + testFiles.get(j));
+			tq.produce(testFiles.get(j));
 			tq.storePartialResultsInXMLStore();
 		}
+
 		tq.storePartialResultsInXMLStore();
 		tq.shutdown();
 		tq.storePartialResultsInXMLStore();

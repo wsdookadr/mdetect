@@ -6,12 +6,16 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+
 
 public class Analyzer {
 	/*
@@ -67,27 +71,24 @@ public class Analyzer {
 	/*
 	 * Acquire file hashes, sizes and paths from Git repositories.
 	 */
-	void acquireData(String dirPath) {
+	List<String> findFilesToAnalyze(String dirPath) {
 		IOFileFilter gitFilter = FileFilterUtils.notFileFilter(
-				FileFilterUtils.and(
-						FileFilterUtils.directoryFileFilter(),
 						FileFilterUtils.nameFileFilter(".git")
-						)
 				);
 		File dir = new File(dirPath);
-		try {
-			System.out.println("Getting all files in " + dir.getCanonicalPath() + " including those in subdirectories");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		List<File> files = (List<File>) FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-		for (File file : files) {
+		String[] phpExt = new String[] {"php"};
+		IOFileFilter phpFilter = new SuffixFileFilter(phpExt, IOCase.INSENSITIVE);
+		List<File> files = (List<File>) FileUtils.listFiles(dir, phpFilter, gitFilter);
+		List<String> results = new ArrayList<String>();
+		for (File f : files) {
 			try {
-				System.out.println("file: " + file.getCanonicalPath());
+				results.add(f.getCanonicalPath());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		
+		return results;
 	}
 	
 	void _do() {
