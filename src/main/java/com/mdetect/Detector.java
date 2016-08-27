@@ -174,64 +174,6 @@ public class Detector {
     	return invMap;
     }
 
-    /*
-     * Receives XML as a string and returns an XdmNode
-     * (we can operate with XPath and XQuery on the XdmNode)
-     */
-    public  XdmNode getXDM(String xmlString) {
-    	XdmNode input;
-    	DocumentBuilder newDocumentBuilder = xmlProcessor.newDocumentBuilder();
-		try {
-			StringReader stringReader = new StringReader(xmlString);
-			// streamSource = new StreamSource(new ByteArrayInputStream(xmlString.getBytes()))
-			StreamSource streamSource = new javax.xml.transform.stream.StreamSource(stringReader);
-			// new StreamSource(new FileInputStream(in))
-			input = newDocumentBuilder.build(streamSource);
-			
-			return input;
-		} catch (SaxonApiException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		};
-		
-		return null;
- 	}
-
-    /*
-     * Run an XPath query on an XML document and return
-     * a list of XdmItem nodes that matched
-     */
-    public  List<XdmItem> runXPath(XdmNode xdmDoc, String stringXPath) {
-    	ArrayList<XdmItem> matched = new ArrayList<XdmItem>();
-    	XPathExecutable exec = null;
-    	XPathCompiler xpath = xmlProcessor.newXPathCompiler();
-    	
-    	try {
-			exec = xpath.compile(stringXPath);
-			
-			XPathSelector eval = exec.load();
-			eval.setContextItem(xdmDoc);
-			eval.evaluate();
-			
-			Iterator<XdmItem> it = eval.iterator();
-			XdmItem current = null;
-			if (it.hasNext()) {
-				current = it.next();
-			}
-			while (current != null) {
-				matched.add(current);
-				try {
-					current = it.next();
-				} catch (NoSuchElementException ex) {
-					break;
-				}
-			}
-		} catch (SaxonApiException e) {
-			e.printStackTrace();
-		}
-    	return matched;
-    }
 
     public void processFile(String filePath) {
     	Pair<Parser, Lexer> pl = parsePHP(filePath);
@@ -256,17 +198,18 @@ public class Detector {
     	//xmlDoc = Utils.convertDOMToXDM(domDoc);
     }
     
+    /*
     public void runChecks() {
     	System.out.println("in runChecks");
-    	/* function call counts */
+    	// function call counts
     	CountMap cFunctions  = new CountMap();
-    	/* variable usages */
+    	// variable usages
     	CountMap cVariables = new CountMap();
-    	/* variable function calls */
+    	// variable function calls
     	CountMap cVarFun  = new CountMap();
     	Integer evalCount = 0;
     	Integer chrCount = 0;
-    	/* for example \x29 */
+    	// for example \x29
     	float hexLiteralChars = 0;
     	List<XdmItem> matchFunctionCalls = runXPath(xmlDoc, "//functionCall//identifier");
     	for(XdmItem f: matchFunctionCalls) {
@@ -280,10 +223,8 @@ public class Detector {
     		String k = f.getStringValue();
     		cVarFun.add(k);
     	}
-    	/*
-    	 * because <string> can have children like
-    	 * <term> or <interpolatedStringPart> 
-    	 */
+    	//because <string> can have children like
+    	//<term> or <interpolatedStringPart>
     	List<XdmItem> strings = runXPath(xmlDoc, "//string");
     	for(XdmItem s: strings) {
     		String sbuf = "";
@@ -299,6 +240,7 @@ public class Detector {
     	}
     	
     }
+	*/
     
 	public Detector() {
 		xmlProcessor = new Processor(false);

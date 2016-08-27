@@ -70,9 +70,8 @@ public class Analyzer {
         
     }
 	
-	
 	/*
-	 * Find Git repositories (to retrieve checksums if necessary)
+	 * Find Git repositories (to retrieve checksums)
 	 * 
 	 * Note: even though the SuffixFileFilter is created
 	 * 		 according to apache commons documentation, it doesn't
