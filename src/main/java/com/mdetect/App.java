@@ -85,8 +85,9 @@ public class App {
 		tq.storePartialResultsInXMLStore();
 		*/
 		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
-		GitStore g = new GitStore();
-		g.listHashes(gRepoPaths.get(0));
+		String testRepo = gRepoPaths.get(0);
+		GitStore g = new GitStore(testRepo);
+		g.getAllTags();
 		
 		XmlStore.stopServer();
 		System.exit(0);

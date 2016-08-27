@@ -2,31 +2,81 @@ package com.mdetect;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEntry;
 import org.eclipse.jgit.dircache.DirCacheIterator;
 import org.eclipse.jgit.dircache.DirCacheTree;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 public class GitStore {
-
-	
-	public GitStore() {
-		
+	public Git git = null;
+	public String gitRepoPath;
+	public GitStore(String gitRepoPath) {
+		this.gitRepoPath = gitRepoPath;
+		try {
+			git = Git.open(new File(gitRepoPath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	/*
 	 * Currently lists all files in the git repository
 	 * and their respective object ids (sha1 with a prepended fixed string)
 	 * 
 	 */
-	public void listHashes(String gitRepoPath) {
-		Git git = null;
+	
+	public List<String> getAllTags() {
+		List<String> results = new ArrayList<String>();
+		List<Ref> call;
 		try {
-			git = Git.open(new File(gitRepoPath));
+			call = git.tagList().call();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+			System.out.println("here1");
+			return results;
+		}
+		System.out.println(call.size());
+		Repository repository = git.getRepository();
+		for (Ref ref : call) {
+			try {
+				ObjectId tagObjId = ref.getObjectId();
+				System.out.println("here2");
+				System.out.println("Tag: " + ref + " " + ref.getName() + " " + tagObjId.getName());
+				LogCommand log = git.log();
+				
+				/*
+				Ref peeledRef = repository.peel(ref);
+				if (peeledRef.getPeeledObjectId() != null) {
+					log.add(peeledRef.getPeeledObjectId());
+				} else {
+					log.add(ref.getObjectId());
+				}
+				
+				Iterable<RevCommit> logs = log.call();
+				for (RevCommit rev : logs) {
+					//System.out.println("Commit: " + rev);
+				}
+				*/
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
+		return results;
+	}
+	
+	
+	public void listHashes() {
+		try {
 			Repository rep = git.getRepository();
 			DirCache dc = rep.readDirCache();
 		    DirCacheTree ct = dc.getCacheTree(false);
@@ -37,19 +87,17 @@ public class GitStore {
 				while (tw.next()) {
 				    if (tw.isSubtree()) {
 				        System.out.println("dir: " + tw.getPathString());
-				        //tw.enterSubtree();
+				        tw.enterSubtree();
 				    } else {
-				    	
 				    	String pathString = tw.getPathString();
 				    	String sha1 = dc.getEntry(pathString).getObjectId().getName();
-				        System.out.println("sha1: " + sha1 + " file: " + tw.getPathString());
+				        System.out.println("sha1: " + sha1 + " file: " + pathString);
 				    }
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 }

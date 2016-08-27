@@ -4,8 +4,12 @@
 # by a vast majority of websites: Joomla, Drupal, Wordpress.
 #
 
-git clone --depth 100 https://github.com/joomla/joomla-cms.git    data/joomla
-git clone --depth 100 https://github.com/drupal/drupal.git        data/drupal
-git clone --depth 100 https://github.com/WordPress/WordPress.git  data/wordpress
+#OPTS="--depth 100"
+OPTS=""
+
+
+git clone $OPTS https://github.com/joomla/joomla-cms.git    data/joomla
+git clone $OPTS https://github.com/drupal/drupal.git        data/drupal
+git clone $OPTS https://github.com/WordPress/WordPress.git  data/wordpress
 
 
