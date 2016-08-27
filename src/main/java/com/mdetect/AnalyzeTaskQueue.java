@@ -13,16 +13,13 @@ import org.w3c.dom.Document;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/*
- * 
- * 
- */
 
 public class AnalyzeTaskQueue {
     private final BlockingQueue<String> workQueue;
     private final ExecutorService service;
     private final XmlStore xstore;
     public final ConcurrentLinkedQueue<ParseTreeDTO> resultQueue;
+
     /*
      * The task queue uses a blocking work queue with a maximum size
      * (if the queue has reached maximum capacity, it will block
@@ -54,6 +51,7 @@ public class AnalyzeTaskQueue {
             Thread.currentThread().interrupt();
         }
     }
+
     /*
      * 
      * Clean up work queue and await for executor to finish up.

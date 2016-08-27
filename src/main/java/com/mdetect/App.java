@@ -43,7 +43,6 @@ public class App {
 		Detector d = new Detector();
 		XmlStore xstore = new XmlStore();
 		xstore.createDB();
-
 		/*
 		 * small test .php files (between 20kb and 50kb)
 		 * find data/ -name "*.php" -size +20000c -a -size -50000c
@@ -67,7 +66,9 @@ public class App {
 		};
 
 		String testFiles[] = smallerTestFiles;
-		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(2,1000,xstore);
+		int analyzeQueueCapacity = 1000;
+		int analyzeWorkers = 2;
+		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers,analyzeQueueCapacity,xstore);
 		for(int j=0;j<testFiles.length;j++) {
 			System.out.println("producing task " + testFiles[j]);
 			tq.produce(testFiles[j]);
