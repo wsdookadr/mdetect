@@ -28,6 +28,15 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
+/*
+ * This class has functionality for accessing a Git repository
+ * (using the jgit library) and extracts required information from it.
+ * 
+ * The assumption made is the tags of the Git repository are expected
+ * to be the releases for that software project.
+ * 
+ */
+
 public class GitStore {
 	public Git git = null;
 	public String gitRepoPath;
@@ -44,7 +53,6 @@ public class GitStore {
 	 * and their respective object ids (sha1 with a prepended fixed string)
 	 * 
 	 */
-	
 	public List<String> getAllTags() {
 		List<String> results = new ArrayList<String>();
 		List<Ref> call;
@@ -62,21 +70,6 @@ public class GitStore {
 				String tagName = ref.getName();
 				String tagCommit = tagObjId.getName();
 				System.out.println("Tag: " + ref + " " + tagName + " " + tagCommit);
-				LogCommand log = git.log();
-				
-				/*
-				Ref peeledRef = repository.peel(ref);
-				if (peeledRef.getPeeledObjectId() != null) {
-					log.add(peeledRef.getPeeledObjectId());
-				} else {
-					log.add(ref.getObjectId());
-				}
-				
-				Iterable<RevCommit> logs = log.call();
-				for (RevCommit rev : logs) {
-					//System.out.println("Commit: " + rev);
-				}
-				*/
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
