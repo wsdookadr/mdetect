@@ -42,7 +42,6 @@ public class GitStore {
 			call = git.tagList().call();
 		} catch (GitAPIException e) {
 			e.printStackTrace();
-			System.out.println("here1");
 			return results;
 		}
 		System.out.println(call.size());
@@ -50,8 +49,9 @@ public class GitStore {
 		for (Ref ref : call) {
 			try {
 				ObjectId tagObjId = ref.getObjectId();
-				System.out.println("here2");
-				System.out.println("Tag: " + ref + " " + ref.getName() + " " + tagObjId.getName());
+				String tagName = ref.getName();
+				String tagCommit = tagObjId.getName();
+				System.out.println("Tag: " + ref + " " + tagName + " " + tagCommit);
 				LogCommand log = git.log();
 				
 				/*
