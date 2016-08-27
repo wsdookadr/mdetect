@@ -8,9 +8,11 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.basex.query.QueryException;
+import org.eclipse.jgit.api.Git;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,8 +84,9 @@ public class App {
 		tq.shutdown();
 		tq.storePartialResultsInXMLStore();
 		*/
-		a.findGitRepos("/home/user/work/mdetect/data");
-		
+		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
+		GitStore g = new GitStore();
+		g.listHashes(gRepoPaths.get(0));
 		
 		XmlStore.stopServer();
 		System.exit(0);

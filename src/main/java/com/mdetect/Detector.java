@@ -113,10 +113,8 @@ public class Detector {
 	 * - http://sysadmin.cyklodev.com/
 	 * - http://www.joeswebtools.com/security/php-obfuscator/
 	 *  
-	 *  
 	 *  Note: Git-compatible file hash with JGit
 	 *  	  http://stackoverflow.com/a/19789797/827519
-	 *  
 	 *  
 	 *  TODO: Some of the larger files in wordpress contain & and other symbols.	
 	 *  	  Because the serialization is incomplete, Saxon will throw
@@ -124,7 +122,6 @@ public class Detector {
 	 *  	  Need to fix that either by serializing valid XML, or directly building
 	 *  	  the XML tree. 
 	 */
-	
 
 	Processor xmlProcessor = null;
 	XdmNode xmlDoc = null;
@@ -148,19 +145,6 @@ public class Detector {
         Pair<Parser, Lexer> retval = new Pair<Parser, Lexer>(parser, lexer);
         return retval;
     }
-    
-    /*
-     * this function will use the start rule name. it will
-     * then attempt to use xpath in order to find motifs inside
-     * the AST.
-     * 
-     * https://github.com/antlr/antlr4/blob/master/doc/tree-matching.md
-     * https://github.com/antlr/antlr4/blob/master/tool-testsuite/test/org/antlr/v4/test/tool/TestXPath.java
-     * https://github.com/antlr/antlr4/blob/master/runtime-testsuite/test/org/antlr/v4/test/runtime/java/BaseTest.java#L573
-     */
-    public  void findMotif() {
-    	
-    }
 
     /*
      * Inverts a map (K->V to V->K)
@@ -173,7 +157,6 @@ public class Detector {
     	};
     	return invMap;
     }
-
 
     public void processFile(String filePath) {
     	Pair<Parser, Lexer> pl = parsePHP(filePath);
@@ -188,14 +171,7 @@ public class Detector {
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
     	ParseTreeDOMSerializer ptSerializer = new ParseTreeDOMSerializer(ruleNames, invTokenMap);
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
-    	/*
-    	 * get the XML document in both formats
-    	 * org.w3c.dom.Document and
-    	 * net.sf.saxon.s9api.XdmNode
-    	 * 
-    	 */
     	domDoc = ptSerializer.getDOMDocument();
-    	//xmlDoc = Utils.convertDOMToXDM(domDoc);
     }
     
     /*

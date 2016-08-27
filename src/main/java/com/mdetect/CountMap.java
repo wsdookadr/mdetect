@@ -3,7 +3,6 @@ package com.mdetect;
 import java.util.HashMap;
 
 public class CountMap extends HashMap<String,Integer> {
-	
 	/*
 	 * increase the count for this key
 	 */
