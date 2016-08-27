@@ -7,15 +7,25 @@ import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEntry;
 import org.eclipse.jgit.dircache.DirCacheIterator;
 import org.eclipse.jgit.dircache.DirCacheTree;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 public class GitStore {
@@ -75,10 +85,36 @@ public class GitStore {
 	}
 	
 	
-	public void listHashes() {
+	/*
+	 * Receives commit as a string. Checks out that specific commit
+	 * and gets information about files and their object ids (sha1)
+	 * at that commit.
+	 * 
+	 */
+	
+	public void listHashes(String sCommit) {
+		ObjectId oCommit = null;
+		Repository rep = git.getRepository();
+		// get commit (or HEAD if it's not specified)
+		if(sCommit == null) {
+			try {
+				oCommit = rep.resolve(Constants.HEAD);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			oCommit = ObjectId.fromString(sCommit);
+		}
+		// switch to that commit
 		try {
-			Repository rep = git.getRepository();
-			DirCache dc = rep.readDirCache();
+			git.checkout().setName(oCommit.getName()).call();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		// get file listing
+		try {
+            DirCache dc = rep.readDirCache();
 		    DirCacheTree ct = dc.getCacheTree(false);
 			DirCacheIterator di = new DirCacheIterator(dc);
 			try (TreeWalk tw = new TreeWalk(rep)) {
@@ -90,6 +126,7 @@ public class GitStore {
 				        tw.enterSubtree();
 				    } else {
 				    	String pathString = tw.getPathString();
+				    	
 				    	String sha1 = dc.getEntry(pathString).getObjectId().getName();
 				        System.out.println("sha1: " + sha1 + " file: " + pathString);
 				    }
