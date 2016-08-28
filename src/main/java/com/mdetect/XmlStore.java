@@ -10,6 +10,7 @@ import org.basex.query.QueryException;
 import org.basex.query.QueryProcessor;
 import org.basex.util.Prop;
 import org.basex.util.list.StringList;
+import org.apache.commons.io.IOUtils;
 import org.basex.BaseXServer;
 import org.basex.api.client.ClientQuery;
 import org.basex.api.client.ClientSession;
@@ -67,11 +68,30 @@ public class XmlStore {
 		}
 	}
 	
+	public void addChecksum(GitFileDTO f, String gTag){
+		/*
+		 * XQuery template
+		 */
+		String xqlTmplt = null;
+		try {
+			InputStream is = this.getClass().getResourceAsStream("/add_checksum.xql");
+			InputStreamReader isr = new InputStreamReader(is);
+			xqlTmplt = IOUtils.toString(isr);
+			System.out.println(xqlTmplt);
+			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(xqlTmplt == null)
+			return;
+		String xql = String.format(xqlTmplt, f.getPath(), gTag, f.getSha1(), Integer.toString(f.getFileSize()));
+		//session.execute(xql);
+	}
+	
 	
 	protected String eval(final String query) throws QueryException, IOException {
 		final ArrayOutput ao = new ArrayOutput();
 		try (final QueryProcessor qp = new QueryProcessor(query, context)) {
-			//qp.sc.baseURI(BASEURI);
 			qp.register(context);
 			try (final Serializer ser = qp.getSerializer(ao)) {
 				qp.value().serialize(ser);

@@ -37,7 +37,6 @@ public class App {
 	 * a series of metrics will be computed on them. After that, a 
 	 * set of rules would mark some of them as being suspicious.
 	 * 
-	 * 
 	 * Raising the stack limit is necessary because of serializing
 	 * very nested structures ( -Xss3m ).
 	 */
@@ -67,6 +66,7 @@ public class App {
 				//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
 				//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
 		};
+		
 		/*
 		List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
 		ArrayList<String> testFiles = (ArrayList<String>) completeList;
@@ -83,16 +83,23 @@ public class App {
 		tq.storePartialResultsInXMLStore();
 		*/
 		
+		
 		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
 		String testRepo = gRepoPaths.get(0);
 		GitStore g = new GitStore(testRepo);
 		List<GitTagDTO> gitTags = g.getAllTags();
+		int j = 0;
 		for(GitTagDTO tag: gitTags) {
 			List<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
 			for(GitFileDTO f: gitFiles) {
 				System.out.println(f.toString());
+				xstore.addChecksum(f, tag.getTagName());
 			}
+			j++;
+			if(j==1)
+				break;
 		}
+		
 
 		XmlStore.stopServer();
 		System.exit(0);

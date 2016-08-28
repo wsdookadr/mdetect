@@ -38,7 +38,7 @@ public class GitFileDTO {
 	}
 	
 	public String toString() {
-		HashMap h = new HashMap<String, String>();
+		HashMap<String, String> h = new HashMap<String, String>();
 		h.put("fileSize", Integer.toString(fileSize));
 		h.put("path", path);
 		h.put("sha1", sha1);

@@ -20,6 +20,12 @@
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>resources/</directory>
+            </resource>
+        </resources>
+
         <pluginManagement>
             <plugins>
                 <plugin>
