@@ -53,8 +53,8 @@ public class GitStore {
 	 * and their respective object ids (sha1 with a prepended fixed string)
 	 * 
 	 */
-	public List<String> getAllTags() {
-		List<String> results = new ArrayList<String>();
+	public List<GitTagDTO> getAllTags() {
+		List<GitTagDTO> results = new ArrayList<GitTagDTO>();
 		List<Ref> call;
 		try {
 			call = git.tagList().call();
@@ -69,6 +69,8 @@ public class GitStore {
 				ObjectId tagObjId = ref.getObjectId();
 				String tagName = ref.getName();
 				String tagCommit = tagObjId.getName();
+				GitTagDTO t = new GitTagDTO(tagName, tagCommit);
+				results.add(t);
 				System.out.println("Tag: " + ref + " " + tagName + " " + tagCommit);
 			} catch (Exception e) {
 				e.printStackTrace();
