@@ -1,4 +1,6 @@
-ADD x1.xml;
+
+ADD TO x1.xml <doc></doc>
+
 XQUERY insert node 
 <entry>
 	<path>%s</path>
@@ -6,5 +8,5 @@ XQUERY insert node
 	<checksum>%s</checksum>
 	<size>%s</size>
 </entry>
-into doc('x1.xml');
+into doc('x1.xml')
 
