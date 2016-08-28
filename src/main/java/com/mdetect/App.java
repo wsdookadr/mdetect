@@ -84,6 +84,7 @@ public class App {
 		*/
 		
 		
+		/*
 		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
 		String testRepo = gRepoPaths.get(0);
 		GitStore g = new GitStore(testRepo);
@@ -99,7 +100,7 @@ public class App {
 			if(j==1)
 				break;
 		}
-		
+		*/
 
 		XmlStore.stopServer();
 		System.exit(0);

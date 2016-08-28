@@ -26,14 +26,17 @@ public class XmlStore {
 	 * create database and schema
 	 */
 	public void createDB() {
+		context = new Context();
+		String xq = Utils.getResource("/create_db.xql");
+		xq = xq.replaceAll("\n", "");
 		try {
-			context = new Context();
-			new CreateDB(dbName, "").execute(context);
+			session.execute(xq);
 			new CreateIndex("fulltext").execute(context);
-			context.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		context.close();
+		
 	}
 
 	public void makeSession() {
@@ -72,20 +75,15 @@ public class XmlStore {
 		/*
 		 * XQuery template
 		 */
-		String xqlTmplt = null;
-		try {
-			InputStream is = this.getClass().getResourceAsStream("/add_checksum.xql");
-			InputStreamReader isr = new InputStreamReader(is);
-			xqlTmplt = IOUtils.toString(isr);
-			System.out.println(xqlTmplt);
-			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String xqlTmplt = Utils.getResource("/add_checksum.xql");
 		if(xqlTmplt == null)
 			return;
 		String xql = String.format(xqlTmplt, f.getPath(), gTag, f.getSha1(), Integer.toString(f.getFileSize()));
-		//session.execute(xql);
+		try {
+			session.execute(xql);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

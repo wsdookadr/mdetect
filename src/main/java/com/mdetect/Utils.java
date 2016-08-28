@@ -1,5 +1,8 @@
 package com.mdetect;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -11,6 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -93,6 +97,18 @@ public class Utils {
 			System.exit(-1);
 		}
 		return document;
+	}
+	
+	public static String getResource(String path) {
+		String result = null;
+		try {
+			InputStream is =  Class.class.getClass().getResourceAsStream(path);
+			InputStreamReader isr = new InputStreamReader(is);
+			result = IOUtils.toString(isr);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	/*
