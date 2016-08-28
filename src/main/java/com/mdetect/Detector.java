@@ -162,9 +162,10 @@ public class Detector {
     	Pair<Parser, Lexer> pl = parsePHP(filePath);
     	PHPParser parser = (PHPParser) pl.a;
     	parser.setBuildParseTree(true);
+    	
         /* 
-         * htmlDocument is the start rule for the PHP grammar
-         * (the top-level rule)
+         * htmlDocument is the start rule (the top-level rule)
+         * for the PHP grammar
          */
     	ParserRuleContext tree =   parser.htmlDocument();
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());

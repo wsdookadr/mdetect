@@ -88,10 +88,12 @@ public class App {
 		String testRepo = gRepoPaths.get(0);
 		GitStore g = new GitStore(testRepo);
 		g.getAllTags();
-		//g.listHashes("fe47e6139dbfc0f0c9ce0d79da77926b5fceaa77");
+		List<GitFileDTO> gitFiles = g.listHashes("fe47e6139dbfc0f0c9ce0d79da77926b5fceaa77");
+		for(GitFileDTO f: gitFiles) {
+			System.out.println(f.toString());
+		}
 		
 		XmlStore.stopServer();
-		
 		System.exit(0);
 	 }
 	 

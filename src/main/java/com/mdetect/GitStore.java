@@ -83,7 +83,8 @@ public class GitStore {
 	 * at that commit.
 	 * 
 	 */
-	public void listHashes(String sCommit) {
+	public List<GitFileDTO> listHashes(String sCommit) {
+		List<GitFileDTO> results = new ArrayList<GitFileDTO>();
 		ObjectId oCommit = null;
 		Repository rep = git.getRepository();
 		// get commit (or HEAD if it's not specified)
@@ -117,15 +118,19 @@ public class GitStore {
 				        tw.enterSubtree();
 				    } else {
 				    	String pathString = tw.getPathString();
-				    	
-				    	String sha1 = dc.getEntry(pathString).getObjectId().getName();
-				        System.out.println("sha1: " + sha1 + " file: " + pathString);
+				    	int fileSize = dc.getEntry(pathString).getLength();
+				    	ObjectId oid = dc.getEntry(pathString).getObjectId();
+				    	String sha1 = oid.getName();
+				    	GitFileDTO fo = new GitFileDTO(fileSize,pathString,sha1);
+				    	results.add(fo);
 				    }
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		return results;
 	}
 	
 }
