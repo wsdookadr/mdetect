@@ -1,0 +1,7 @@
+#!/bin/bash
+L1=$(find `pwd`/target/lib/ -name "*.jar" -printf '%p:' | sed 's/:$//')
+L2=$(find `pwd`/target/     -name "*.jar" -printf '%p:' | sed 's/:$//')
+CP="$L2:target/classes/:$L1"
+export CLASSPATH="$CLASSPATH:$CP"
+java -Xss3m -Dfile.encoding=UTF-8 com.mdetect.App
+
