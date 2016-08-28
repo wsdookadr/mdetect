@@ -139,7 +139,6 @@ public class Utils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		xstore.createDB();
 		xstore.add(filePath, contentsToInsert,true);
 		System.out.println("finished processing "+filePath);
 	}

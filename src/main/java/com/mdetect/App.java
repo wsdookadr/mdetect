@@ -45,7 +45,7 @@ public class App {
 		Analyzer a = new Analyzer();
 		Detector d = new Detector();
 		XmlStore xstore = new XmlStore();
-		xstore.createDB();
+		xstore.createdb();
 		/*
 		 * small test .php files (between 20kb and 50kb)
 		 * find data/ -name "*.php" -size +20000c -a -size -50000c
@@ -84,23 +84,19 @@ public class App {
 		*/
 		
 		
-		/*
 		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
 		String testRepo = gRepoPaths.get(0);
 		GitStore g = new GitStore(testRepo);
 		List<GitTagDTO> gitTags = g.getAllTags();
-		int j = 0;
 		for(GitTagDTO tag: gitTags) {
 			List<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
 			for(GitFileDTO f: gitFiles) {
-				System.out.println(f.toString());
+				//System.out.println(f.toString());
 				xstore.addChecksum(f, tag.getTagName());
 			}
-			j++;
-			if(j==1)
-				break;
 		}
-		*/
+		
+		
 
 		XmlStore.stopServer();
 		System.exit(0);

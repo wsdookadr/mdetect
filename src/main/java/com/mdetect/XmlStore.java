@@ -9,6 +9,7 @@ import org.basex.io.serial.Serializer;
 import org.basex.query.QueryException;
 import org.basex.query.QueryProcessor;
 import org.basex.util.Prop;
+import org.basex.core.parse.Commands.CmdIndex;
 import org.basex.util.list.StringList;
 import org.apache.commons.io.IOUtils;
 import org.basex.BaseXServer;
@@ -25,15 +26,33 @@ public class XmlStore {
 	/*
 	 * create database and schema
 	 */
-	public void createDB() {
+	public void createdb() {
 		context = new Context();
-		String xq = Utils.getResource("/create_db.xql");
-		xq = xq.replaceAll("\n", "");
 		try {
-			session.execute(xq);
-			new CreateIndex("fulltext").execute(context);
+			/* check if the database is present, otherwise throw exception */
+			session.execute("LIST " + dbName);
+			session.execute("OPEN " + dbName);
 		} catch (IOException e) {
-			e.printStackTrace();
+			String dbNotFoundErrorMessage = String.format("Database '%s' was not found.", dbName);
+			String exceptionMessage = e.getMessage();
+			if(exceptionMessage != null && exceptionMessage.equals(dbNotFoundErrorMessage)) {
+				try {
+					/* 
+					 * create database and indexes 
+					 * then select the database to be used
+					 */
+					new CreateDB(dbName,"").execute(context);
+					new org.basex.core.cmd.Open("xtrees");
+					new CreateIndex(CmdIndex.FULLTEXT).execute(context);
+					new CreateIndex(CmdIndex.ATTRIBUTE).execute(context);
+					new org.basex.core.cmd.Flush().execute(context);
+					session.execute("OPEN " + dbName);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			} else {
+				e.printStackTrace();
+			}
 		}
 		context.close();
 		
@@ -71,21 +90,30 @@ public class XmlStore {
 		}
 	}
 	
+	public void addChecksumDoc() {
+		executeStoredQuery("/create_doc.xql","/xtrees/checksums.xml","xtrees","checksums.xml");
+	}
+	
 	public void addChecksum(GitFileDTO f, String gTag){
-		/*
-		 * XQuery template
+		executeStoredQuery("/add_checksum.xql",f.getPath(), gTag, f.getSha1(), Integer.toString(f.getFileSize()));
+	}
+	
+	public void executeStoredQuery(String q, String ...args) {
+		/* 
+		 * retrieve stored query
+		 * render it using the arguments passed
+		 * and execute it
 		 */
-		String xqlTmplt = Utils.getResource("/add_checksum.xql");
-		if(xqlTmplt == null)
+		String storedXql = Utils.getResource(q);
+		if(storedXql == null)
 			return;
-		String xql = String.format(xqlTmplt, f.getPath(), gTag, f.getSha1(), Integer.toString(f.getFileSize()));
+		String xql = String.format(storedXql, args);
 		try {
 			session.execute(xql);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	protected String eval(final String query) throws QueryException, IOException {
 		final ArrayOutput ao = new ArrayOutput();
@@ -120,11 +148,11 @@ public class XmlStore {
 	public static void startServer() {
 		try {
 			int serverPort = 1984;
-		    final String path = System.getenv("HOME") + "/";
+		    final String path = System.getenv("HOME") + "/BaseXData";
 		    final StringList sl = new StringList("-z", "-p " + Integer.toString(serverPort), "-q");
 			context = new Context();
 		    server = new BaseXServer(sl.finish());
-		    Prop.put(StaticOptions.DBPATH, path + "/data");
+		    Prop.put(StaticOptions.DBPATH, path + "/");
 		    Prop.put(StaticOptions.WEBPATH, path + "/webapp");
 		    Prop.put(StaticOptions.RESTXQPATH, path + "/webapp");
 		    Prop.put(StaticOptions.REPOPATH, path + "/repo");
@@ -147,5 +175,6 @@ public class XmlStore {
 	public XmlStore() {
 		startServer();
 		makeSession();
+		addChecksumDoc();
 	}
 }
