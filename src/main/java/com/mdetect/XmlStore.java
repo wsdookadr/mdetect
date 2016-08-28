@@ -45,6 +45,7 @@ public class XmlStore {
 					new org.basex.core.cmd.Open("xtrees");
 					new CreateIndex(CmdIndex.FULLTEXT).execute(context);
 					new CreateIndex(CmdIndex.ATTRIBUTE).execute(context);
+					new CreateIndex(CmdIndex.TEXT).execute(context);
 					new org.basex.core.cmd.Flush().execute(context);
 					session.execute("OPEN " + dbName);
 				} catch (Exception e1) {

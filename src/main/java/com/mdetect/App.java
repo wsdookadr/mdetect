@@ -66,7 +66,7 @@ public class App {
 				//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
 				//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
 		};
-		
+
 		/*
 		List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
 		ArrayList<String> testFiles = (ArrayList<String>) completeList;
