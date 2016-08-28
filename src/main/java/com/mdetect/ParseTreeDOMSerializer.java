@@ -33,7 +33,7 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
 		try {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			document = builder.newDocument();
-			Element root = (Element) document.createElement("root");
+			Element root = (Element) document.createElement("ast");
 			document.appendChild(root);
 			nodeStack.push(root);
 			domDoc = document;

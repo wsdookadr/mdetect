@@ -40,63 +40,70 @@ public class App {
 	 * Raising the stack limit is necessary because of serializing
 	 * very nested structures ( -Xss3m ).
 	 */
+	
+	 public static void acquireMetadata(Analyzer a, Detector d, XmlStore xstore) {
+			// retrieve checksums and metadata for a set of files and store them in the xml store
+			List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
+			String testRepo = gRepoPaths.get(0);
+			GitStore g = new GitStore(testRepo);
+			List<GitTagDTO> gitTags = g.getAllTags();
+			for(GitTagDTO tag: gitTags) {
+				List<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
+				for(GitFileDTO f: gitFiles) {
+					//System.out.println(f.toString());
+					xstore.addChecksum(f, tag.getTagName());
+				}
+			}
+			
+	 }
+	 
+	 public static void analyzeFileStructures(Analyzer a, Detector d, XmlStore xstore) {
+			/*
+			 * small test .php files (between 20kb and 50kb)
+			 * find data/ -name "*.php" -size +20000c -a -size -50000c
+			 * 
+			 */
+			String smallerTestFiles[] = {
+					"/home/user/work/mdetect/data/drupal/core/modules/system/src/Controller/DbUpdateController.php",
+					"/home/user/work/mdetect/data/drupal/core/tests/Drupal/Tests/Core/Entity/Sql/SqlContentEntityStorageTest.php",
+					"/home/user/work/mdetect/data/drupal/core/lib/Drupal/Core/Database/Driver/pgsql/Schema.php",
+					"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt"
+			};
+			String largerTestFiles[] = {
+					"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt",
+					//"/home/user/work/mdetect/samples/sample.php.txt",
+					"/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected",
+					//"/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php",
+					"/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php",
+					//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
+					//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
+			};
+
+			
+			// parse and store parse trees in the xml store
+			List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
+			ArrayList<String> testFiles = (ArrayList<String>) completeList;
+			int analyzeQueueCapacity = 1000;
+			int analyzeWorkers = 5;
+			AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers,analyzeQueueCapacity,xstore);
+			for(int j=0;j<testFiles.size();j++) {
+				System.out.println("producing task " + testFiles.get(j));
+				tq.produce(testFiles.get(j));
+				tq.storePartialResultsInXMLStore();
+			}
+			tq.storePartialResultsInXMLStore();
+			tq.shutdown();
+			tq.storePartialResultsInXMLStore();
+	 }
 
 	 public static void main(String[] args) {
 		Analyzer a = new Analyzer();
 		Detector d = new Detector();
 		XmlStore xstore = new XmlStore();
 		xstore.createdb();
-		/*
-		 * small test .php files (between 20kb and 50kb)
-		 * find data/ -name "*.php" -size +20000c -a -size -50000c
-		 * 
-		 */
-		String smallerTestFiles[] = {
-				"/home/user/work/mdetect/data/drupal/core/modules/system/src/Controller/DbUpdateController.php",
-				"/home/user/work/mdetect/data/drupal/core/tests/Drupal/Tests/Core/Entity/Sql/SqlContentEntityStorageTest.php",
-				"/home/user/work/mdetect/data/drupal/core/lib/Drupal/Core/Database/Driver/pgsql/Schema.php",
-				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt"
-		};
-		String largerTestFiles[] = {
-				"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt",
-				//"/home/user/work/mdetect/samples/sample.php.txt",
-				"/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected",
-				//"/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php",
-				"/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php",
-				//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
-				//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
-		};
-
-		/*
-		List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
-		ArrayList<String> testFiles = (ArrayList<String>) completeList;
-		int analyzeQueueCapacity = 1000;
-		int analyzeWorkers = 5;
-		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers,analyzeQueueCapacity,xstore);
-		for(int j=0;j<testFiles.size();j++) {
-			System.out.println("producing task " + testFiles.get(j));
-			tq.produce(testFiles.get(j));
-			tq.storePartialResultsInXMLStore();
-		}
-		tq.storePartialResultsInXMLStore();
-		tq.shutdown();
-		tq.storePartialResultsInXMLStore();
-		*/
 		
-		
-		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
-		String testRepo = gRepoPaths.get(0);
-		GitStore g = new GitStore(testRepo);
-		List<GitTagDTO> gitTags = g.getAllTags();
-		for(GitTagDTO tag: gitTags) {
-			List<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
-			for(GitFileDTO f: gitFiles) {
-				//System.out.println(f.toString());
-				xstore.addChecksum(f, tag.getTagName());
-			}
-		}
-		
-		
+		//acquireMetadata(a,d,xstore);
+		analyzeFileStructures(a,d,xstore);
 
 		XmlStore.stopServer();
 		System.exit(0);
