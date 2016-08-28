@@ -1,6 +1,7 @@
+# if the document is not there, create it
+XQUERY if(count(fn:collection('/xtrees/x2.xml')) == 0) then ( db:add('x1.xml', <doc></doc>) ) else ()
 
-ADD TO x1.xml <doc></doc>
-
+# insert a new entry
 XQUERY insert node 
 <entry>
 	<path>%s</path>
