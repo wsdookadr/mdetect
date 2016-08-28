@@ -67,6 +67,7 @@ public class App {
 				//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
 				//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
 		};
+
 		/*
 		List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
 		ArrayList<String> testFiles = (ArrayList<String>) completeList;
@@ -78,12 +79,11 @@ public class App {
 			tq.produce(testFiles.get(j));
 			tq.storePartialResultsInXMLStore();
 		}
-
 		tq.storePartialResultsInXMLStore();
 		tq.shutdown();
 		tq.storePartialResultsInXMLStore();
 		*/
-		
+
 		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
 		String testRepo = gRepoPaths.get(0);
 		GitStore g = new GitStore(testRepo);
@@ -91,6 +91,7 @@ public class App {
 		//g.listHashes("fe47e6139dbfc0f0c9ce0d79da77926b5fceaa77");
 		
 		XmlStore.stopServer();
+		
 		System.exit(0);
 	 }
 	 

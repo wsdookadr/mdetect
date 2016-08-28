@@ -124,25 +124,6 @@ public class Analyzer {
 		}
 		
 		return results;
-	}
-	
-	void _do() {
-		/* 
-		 * overview:
-		 * 
-		 * do the work for first tag
-		 * git reset to each other tag
-		 *     see what changed
-		 * 	   get data for what changed
-		 * 	   put it in the db
-		 */
-	}
-
-	/*
-	 * cleans up the entire database.
-	 */
-	void reset() {
-		
-	}
+	} 
 	
 }

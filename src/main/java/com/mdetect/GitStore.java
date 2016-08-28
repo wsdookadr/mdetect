@@ -36,7 +36,6 @@ import org.eclipse.jgit.treewalk.TreeWalk;
  * to be the releases for that software project.
  * 
  */
-
 public class GitStore {
 	public Git git = null;
 	public String gitRepoPath;
@@ -48,6 +47,7 @@ public class GitStore {
 			e.printStackTrace();
 		}
 	}
+
 	/*
 	 * Currently lists all files in the git repository
 	 * and their respective object ids (sha1 with a prepended fixed string)
@@ -58,7 +58,7 @@ public class GitStore {
 		List<Ref> call;
 		try {
 			call = git.tagList().call();
-		} catch (GitAPIException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return results;
 		}
@@ -76,15 +76,13 @@ public class GitStore {
         }
 		return results;
 	}
-	
-	
+
 	/*
 	 * Receives commit as a string. Checks out that specific commit
 	 * and gets information about files and their object ids (sha1)
 	 * at that commit.
 	 * 
 	 */
-	
 	public void listHashes(String sCommit) {
 		ObjectId oCommit = null;
 		Repository rep = git.getRepository();
@@ -125,7 +123,7 @@ public class GitStore {
 				    }
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

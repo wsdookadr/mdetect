@@ -25,7 +25,5 @@ public class AnalyzeWorker extends TaskWorker<String, ParseTreeDTO> {
 		ParseTreeDTO result = new ParseTreeDTO(processedDoc, filePath, "");
 		return result;
 	}
-	
-	
 
 }
