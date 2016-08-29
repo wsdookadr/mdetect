@@ -47,7 +47,6 @@ public class App {
 	 * set of rules would mark some of them as being suspicious.
 	 * 
 	 */
-
 	 public static void acquireMetadata(Analyzer a, Detector d, XmlStore xstore,SqliteStore sq) {
 		/* 
 		 * retrieve checksums and metadata for a set of files
@@ -65,10 +64,10 @@ public class App {
 			for (GitTagDTO tag : gitTags) {
 				LinkedBlockingQueue<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
 				for (GitFileDTO f : gitFiles) {
-					String dupeSetKey = f.getPath() + f.getSha1();
-					if(dupeSet.contains(dupeSetKey))
+					String dupeKey = f.getPath() + f.getSha1();
+					if(dupeSet.contains(dupeKey))
 							continue;
-					dupeSet.add(dupeSetKey);
+					dupeSet.add(dupeKey);
 					
 					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
 					wq.produce(item);
