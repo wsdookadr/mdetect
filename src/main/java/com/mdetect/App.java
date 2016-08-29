@@ -82,30 +82,29 @@ public class App {
 	 }
 
 	 public static void analyzeCodeStructure(Analyzer a, Detector d, XmlStore xstore, SqliteStore sq) {
-			/*
-			 * to get files between 20kb and 50kb
-			 * find data/ -name "*.php" -size +20000c -a -size -50000c
-			 * 
-			 */
-			/* parse and store parse trees in the xml store */
-			ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze("/home/user/work/mdetect/data");
-			int analyzeQueueCapacity = 1000;
-			int analyzeWorkers = 5;
-			AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers,analyzeQueueCapacity,xstore,"/unknown/");
-			for(int j=0;j<toAnalyze.size();j++) {
-				System.out.println("producing task " + toAnalyze.get(j));
-				tq.produce(toAnalyze.get(j));
-				tq.storePartialResultsInXMLStore();
-			}
-			tq.shutdown();
-			/* store the resutls that were computed
-			 * after all the work units were sent out, and
-			 * the executor was shut down (those were not
-			 * drained in the loop above because they were
-			 * still processing after that loop finished, so
-			 * we collect the remaining ones below)
-			 */
+		/*
+		 * to get files between 20kb and 50kb find data/ -name "*.php" -size
+		 * +20000c -a -size -50000c
+		 * 
+		 */
+		/* parse and store parse trees in the xml store */
+		ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze("/home/user/work/mdetect/data");
+		int analyzeQueueCapacity = 1000;
+		int analyzeWorkers = 5;
+		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers, analyzeQueueCapacity, xstore, "/unknown/");
+		for (int j = 0; j < toAnalyze.size(); j++) {
+			System.out.println("producing task " + toAnalyze.get(j));
+			tq.produce(toAnalyze.get(j));
 			tq.storePartialResultsInXMLStore();
+		}
+		tq.shutdown();
+		/*
+		 * store the resutls that were computed after all the work units were
+		 * sent out, and the executor was shut down (those were not drained in
+		 * the loop above because they were still processing after that loop
+		 * finished, so we collect the remaining ones below)
+		 */
+		tq.storePartialResultsInXMLStore();
 	 }
 
 	 public static void main(String[] args) {
