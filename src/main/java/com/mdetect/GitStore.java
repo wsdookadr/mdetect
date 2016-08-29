@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
@@ -85,8 +86,8 @@ public class GitStore {
 	 * at that commit.
 	 * 
 	 */
-	public List<GitFileDTO> listHashes(String sCommit) {
-		List<GitFileDTO> results = new ArrayList<GitFileDTO>();
+	public LinkedBlockingQueue<GitFileDTO> listHashes(String sCommit) {
+		LinkedBlockingQueue<GitFileDTO> results = new LinkedBlockingQueue<GitFileDTO>();
 		ObjectId oCommit = null;
 		Repository rep = git.getRepository();
 		// get commit (or HEAD if it's not specified)
@@ -124,7 +125,7 @@ public class GitStore {
 				    	ObjectId oid = dc.getEntry(pathString).getObjectId();
 				    	String sha1 = oid.getName();
 				    	GitFileDTO fo = new GitFileDTO(fileSize,pathString,sha1);
-				    	results.add(fo);
+				    	results.put(fo);
 				    }
 				}
 			}

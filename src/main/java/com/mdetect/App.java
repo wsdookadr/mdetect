@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,12 +55,13 @@ public class App {
 			GitStore g = new GitStore(repo);
 			List<GitTagDTO> gitTags = g.getAllTags();
 			for (GitTagDTO tag : gitTags) {
-				List<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
+				LinkedBlockingQueue<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
 				for (GitFileDTO f : gitFiles) {
 					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
 					wq.produce(item);
 				}
 				System.gc();
+				System.out.println("tag="+tag.getTagName());
 			}
 		}
 		wq.shutdown();
