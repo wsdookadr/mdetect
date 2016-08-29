@@ -41,7 +41,7 @@ public class App {
 	 * very nested structures ( -Xss3m ).
 	 */
 	
-	 public static void acquireMetadata(Analyzer a, Detector d, XmlStore xstore) {
+	 public static void acquireMetadata(Analyzer a, Detector d, XmlStore xstore,SqliteStore sq) {
 			// retrieve checksums and metadata for a set of files and store them in the xml store
 			List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
 			String testRepo = gRepoPaths.get(0);
@@ -52,12 +52,13 @@ public class App {
 				for(GitFileDTO f: gitFiles) {
 					//System.out.println(f.toString());
 					xstore.addChecksum(f, tag.getTagName());
+					sq.addChecksum(f, tag.getTagName());
 				}
 			}
 			
 	 }
 
-	 public static void analyzeFileStructures(Analyzer a, Detector d, XmlStore xstore) {
+	 public static void analyzeFileStructures(Analyzer a, Detector d, XmlStore xstore, SqliteStore sq) {
 			/*
 			 * small test .php files (between 20kb and 50kb)
 			 * find data/ -name "*.php" -size +20000c -a -size -50000c
@@ -100,9 +101,9 @@ public class App {
 		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
 		
-		//acquireMetadata(a,d,xstore);
+		acquireMetadata(a,d,xstore,sq);
 		System.gc();
-		//analyzeFileStructures(a,d,xstore);
+		//analyzeFileStructures(a,d,xstore,sq);
 		
 		sq.createSchema();
 

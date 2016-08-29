@@ -31,9 +31,15 @@ public class SqliteStore {
 		}
 	}
 	
-	public void add() {
+	public void addChecksum(GitFileDTO f, String gtag) {
 		try {
-			PreparedStatement pstmt = connection.prepareStatement("INSERT INTO (");
+			String query = "INSERT INTO gitfiles (path,sha1,gtag,filesize) VALUES(?,?,?,?);";
+			PreparedStatement pstmt = connection.prepareStatement(query);
+			pstmt.setString(1, f.getPath());
+			pstmt.setString(2, f.getSha1());
+			pstmt.setString(3, gtag);
+			pstmt.setInt(4, f.getFileSize());
+			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
