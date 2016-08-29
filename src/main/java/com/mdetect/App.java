@@ -6,6 +6,11 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
+
+import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
+import com.googlecode.concurrenttrees.radix.RadixTree;
+import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharArrayNodeFactory;
+
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -18,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -40,31 +46,38 @@ public class App {
 	 * a series of metrics will be computed on them. After that, a 
 	 * set of rules would mark some of them as being suspicious.
 	 * 
-	 * Raising the stack limit is necessary because of serializing
-	 * very nested structures ( -Xss3m ).
 	 */
 
 	 public static void acquireMetadata(Analyzer a, Detector d, XmlStore xstore,SqliteStore sq) {
 		/* 
 		 * retrieve checksums and metadata for a set of files
-		 * and store them in the xml store
+		 * and store their checksums and metadata.
+		 * 
+		 * duplicates on (path,sha1) will be excluded.
 		 */
 		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
 		
-		for (String repo : gRepoPaths) {
+		for (String gRepo : gRepoPaths) {
 			WriteQueue wq = new WriteQueue(xstore, sq);
-			GitStore g = new GitStore(repo);
+			GitStore g = new GitStore(gRepo);
 			List<GitTagDTO> gitTags = g.getAllTags();
+			//HashSet<String> dupeSet = new HashSet<String>();
+			RadixTree<Integer> dupeSet = new ConcurrentRadixTree<Integer>(new DefaultCharArrayNodeFactory());
 			for (GitTagDTO tag : gitTags) {
 				LinkedBlockingQueue<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
 				for (GitFileDTO f : gitFiles) {
+					String dupeSetKey = f.getPath() + f.getSha1();
+					if(dupeSet.getValueForExactKey(dupeSetKey)!=null)
+						continue;
+					dupeSet.put(dupeSetKey, 1);
 					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
 					wq.produce(item);
 				}
 				System.out.println("tag="+tag.getTagName());
+				System.gc();
 			}
 			wq.shutdown();
-			System.gc();
+			
 		}
 	 }
 
@@ -78,7 +91,7 @@ public class App {
 			ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze("/home/user/work/mdetect/data");
 			int analyzeQueueCapacity = 1000;
 			int analyzeWorkers = 5;
-			AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers,analyzeQueueCapacity,xstore);
+			AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers,analyzeQueueCapacity,xstore,"/unknown/");
 			for(int j=0;j<toAnalyze.size();j++) {
 				System.out.println("producing task " + toAnalyze.get(j));
 				tq.produce(toAnalyze.get(j));

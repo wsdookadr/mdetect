@@ -18,6 +18,7 @@ public class AnalyzeTaskQueue {
     private final BlockingQueue<String> workQueue;
     private final ExecutorService service;
     private final XmlStore xstore;
+    private String storePrefix;
     public final ConcurrentLinkedQueue<ParseTreeDTO> resultQueue;
     /*
      * The task queue uses a blocking work queue with a maximum size
@@ -31,8 +32,9 @@ public class AnalyzeTaskQueue {
      * The analysis (parsing) is done in parallel, and the writing
      * to the datastore happens sequentially.
      */
-    public AnalyzeTaskQueue(int numActiveParallelWorkers, int queueCapacity, XmlStore xstore) {
+    public AnalyzeTaskQueue(int numActiveParallelWorkers, int queueCapacity, XmlStore xstore, String storePrefix) {
     	this.xstore = xstore;
+    	this.storePrefix = storePrefix;
         workQueue = new LinkedBlockingQueue<String>(queueCapacity);
         resultQueue = new ConcurrentLinkedQueue<ParseTreeDTO>();
         service = Executors.newFixedThreadPool(numActiveParallelWorkers);
@@ -112,7 +114,7 @@ public class AnalyzeTaskQueue {
 					e.printStackTrace();
 				}
 				try {
-					xstore.add(p.getFilePath(), contentsToInsert, true);
+					xstore.add(storePrefix + p.getFilePath(), contentsToInsert, true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

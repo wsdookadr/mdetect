@@ -1,14 +1,15 @@
 package com.mdetect;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 public class WriteWorkerXmlStore implements Runnable {
-	public BlockingQueue<Pair<GitFileDTO, String>> q;
+	public LinkedBlockingDeque<Pair<GitFileDTO, String>> q;
 	public XmlStore xstore;
 	
-	public WriteWorkerXmlStore(XmlStore xstore,BlockingQueue<Pair<GitFileDTO, String>> q) {
+	public WriteWorkerXmlStore(XmlStore xstore,LinkedBlockingDeque<Pair<GitFileDTO, String>> q) {
 		this.xstore = xstore;
 		this.q = q;
 	}

@@ -124,6 +124,12 @@ public class GitStore {
 				    	int fileSize = dc.getEntry(pathString).getLength();
 				    	ObjectId oid = dc.getEntry(pathString).getObjectId();
 				    	String sha1 = oid.getName();
+				    	/* 
+				    	 * so far, the path to the git object (the file at a specific revision)
+				    	 * is relative to the repository.
+				    	 * transform that to an absolute path by prepending the git repo path.
+				    	 */
+				    	pathString = gitRepoPath + "/" + pathString;
 				    	GitFileDTO fo = new GitFileDTO(fileSize,pathString,sha1);
 				    	results.put(fo);
 				    }
