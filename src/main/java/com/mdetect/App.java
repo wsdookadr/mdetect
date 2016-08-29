@@ -50,8 +50,9 @@ public class App {
 		 * and store them in the xml store
 		 */
 		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
-		WriteQueue wq = new WriteQueue(xstore, sq);
+		
 		for (String repo : gRepoPaths) {
+			WriteQueue wq = new WriteQueue(xstore, sq);
 			GitStore g = new GitStore(repo);
 			List<GitTagDTO> gitTags = g.getAllTags();
 			for (GitTagDTO tag : gitTags) {
@@ -60,11 +61,11 @@ public class App {
 					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
 					wq.produce(item);
 				}
-				System.gc();
 				System.out.println("tag="+tag.getTagName());
 			}
+			wq.shutdown();
+			System.gc();
 		}
-		wq.shutdown();
 	 }
 
 	 public static void analyzeCodeStructure(Analyzer a, Detector d, XmlStore xstore, SqliteStore sq) {

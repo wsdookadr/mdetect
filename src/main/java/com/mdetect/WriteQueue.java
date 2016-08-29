@@ -21,8 +21,8 @@ public class WriteQueue  {
     public final XmlStore 	  xstore;
     public final SqliteStore sq;
     
-	public int maxQueueSize = 1000;
-	public int writeSize = 400;
+	public int maxQueueSize = 200;
+	public int writeSize = 170;
 	
 	public WriteQueue(XmlStore xstore, SqliteStore sq) {
 		qSqlStore = new LinkedBlockingQueue<Pair<GitFileDTO, String>>(maxQueueSize);

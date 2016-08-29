@@ -17,7 +17,7 @@ public class WriteWorkerXmlStore implements Runnable {
 	public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-            	if(q.size() >= 0) {
+            	if(q.size() >= 30) {
             		Pair<GitFileDTO, String> item = q.take();
             		xstore.addChecksum(item.getLeft(), item.getRight());
             	}
@@ -26,6 +26,7 @@ public class WriteWorkerXmlStore implements Runnable {
                 break;
             }
         }
+        
 	}
 
 }
