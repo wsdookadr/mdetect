@@ -54,41 +54,26 @@ public class App {
 					xstore.addChecksum(f, tag.getTagName());
 					sq.addChecksum(f, tag.getTagName());
 				}
+				sq.commit();
 			}
 			
 	 }
 
 	 public static void analyzeFileStructures(Analyzer a, Detector d, XmlStore xstore, SqliteStore sq) {
 			/*
-			 * small test .php files (between 20kb and 50kb)
+			 * to get files between 20kb and 50kb
 			 * find data/ -name "*.php" -size +20000c -a -size -50000c
 			 * 
 			 */
-			String smallerTestFiles[] = {
-					"/home/user/work/mdetect/data/drupal/core/modules/system/src/Controller/DbUpdateController.php",
-					"/home/user/work/mdetect/data/drupal/core/tests/Drupal/Tests/Core/Entity/Sql/SqlContentEntityStorageTest.php",
-					"/home/user/work/mdetect/data/drupal/core/lib/Drupal/Core/Database/Driver/pgsql/Schema.php",
-					"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt"
-			};
-			String largerTestFiles[] = {
-					"/home/user/work/mdetect/samples/mod_system/adodb.class.php.txt",
-					//"/home/user/work/mdetect/samples/sample.php.txt",
-					"/home/user/work/mdetect/samples/mod_system/pdo.inc.php.suspected",
-					//"/home/user/work/mdetect/data/wordpress/wp-includes/class-phpmailer.php",
-					"/home/user/work/mdetect/data/drupal/core/modules/datetime/src/Tests/DateTimeFieldTest.php",
-					//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
-					//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
-			};
-			
+
 			// parse and store parse trees in the xml store
-			List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
-			ArrayList<String> testFiles = (ArrayList<String>) completeList;
+			ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze("/home/user/work/mdetect/data");
 			int analyzeQueueCapacity = 1000;
 			int analyzeWorkers = 5;
 			AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers,analyzeQueueCapacity,xstore);
-			for(int j=0;j<testFiles.size();j++) {
-				System.out.println("producing task " + testFiles.get(j));
-				tq.produce(testFiles.get(j));
+			for(int j=0;j<toAnalyze.size();j++) {
+				System.out.println("producing task " + toAnalyze.get(j));
+				tq.produce(toAnalyze.get(j));
 				tq.storePartialResultsInXMLStore();
 			}
 			tq.shutdown();
@@ -100,12 +85,12 @@ public class App {
 		Detector d = new Detector();
 		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
+		sq.createSchema();
 		
 		acquireMetadata(a,d,xstore,sq);
 		System.gc();
 		//analyzeFileStructures(a,d,xstore,sq);
 		
-		sq.createSchema();
 
 		XmlStore.stopServer();
 		System.exit(0);

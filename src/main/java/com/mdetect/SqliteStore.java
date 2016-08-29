@@ -15,6 +15,7 @@ public class SqliteStore {
 		dbPath = System.getenv("HOME") + "/.mdetect.db";
         try {
           connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+          connection.setAutoCommit(false);
         } catch(SQLException e) {
           System.err.println(e.getMessage());
           System.exit(-1);
@@ -33,15 +34,28 @@ public class SqliteStore {
 	
 	public void addChecksum(GitFileDTO f, String gtag) {
 		try {
+			/* need to speed this up */
 			String query = "INSERT INTO gitfiles (path,sha1,gtag,filesize) VALUES(?,?,?,?);";
 			PreparedStatement pstmt = connection.prepareStatement(query);
 			pstmt.setString(1, f.getPath());
 			pstmt.setString(2, f.getSha1());
 			pstmt.setString(3, gtag);
 			pstmt.setInt(4, f.getFileSize());
-			pstmt.executeUpdate();
+			pstmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	public void commit() {
+		try {
+			connection.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
 }
