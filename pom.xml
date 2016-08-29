@@ -231,12 +231,6 @@
             <version>8.5.3</version>
             <systemPath>${basedir}/deps/BaseX853.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>com.googlecode.concurrent-trees</groupId>
-            <artifactId>concurrent-trees</artifactId>
-            <version>2.6.0</version>
-        </dependency>
-
     </dependencies>
 
     <licenses>

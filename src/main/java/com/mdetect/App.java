@@ -61,15 +61,15 @@ public class App {
 			WriteQueue wq = new WriteQueue(xstore, sq);
 			GitStore g = new GitStore(gRepo);
 			List<GitTagDTO> gitTags = g.getAllTags();
-			//HashSet<String> dupeSet = new HashSet<String>();
-			RadixTree<Integer> dupeSet = new ConcurrentRadixTree<Integer>(new DefaultCharArrayNodeFactory());
+			HashSet<String> dupeSet = new HashSet<String>();
 			for (GitTagDTO tag : gitTags) {
 				LinkedBlockingQueue<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
 				for (GitFileDTO f : gitFiles) {
 					String dupeSetKey = f.getPath() + f.getSha1();
-					if(dupeSet.getValueForExactKey(dupeSetKey)!=null)
-						continue;
-					dupeSet.put(dupeSetKey, 1);
+					if(dupeSet.contains(dupeSetKey))
+							continue;
+					dupeSet.add(dupeSetKey);
+					
 					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
 					wq.produce(item);
 				}
