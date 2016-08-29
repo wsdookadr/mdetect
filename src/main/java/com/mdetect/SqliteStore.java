@@ -35,7 +35,7 @@ public class SqliteStore {
 	public void addChecksum(GitFileDTO f, String gtag) {
 		try {
 			/* need to speed this up */
-			String query = "INSERT INTO gitfiles (path,sha1,gtag,filesize) VALUES(?,?,?,?);";
+			String query = Utils.getResource("/insert_checksum.sql");
 			PreparedStatement pstmt = connection.prepareStatement(query);
 			pstmt.setString(1, f.getPath());
 			pstmt.setString(2, f.getSha1());
