@@ -10,8 +10,13 @@ public class SqliteStore {
 	public String dbPath = null;
 	public Connection connection = null;
 	
+	public String queryInsert = null;
+	public String querySchema = null;
+	
 	public String dbSchema = "";
 	public SqliteStore() {
+		querySchema = Utils.getResource("/create_schema.sql");
+		queryInsert = Utils.getResource("/insert_checksum.sql");
 		dbPath = System.getenv("HOME") + "/.mdetect.db";
         try {
           connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
@@ -23,9 +28,9 @@ public class SqliteStore {
     }
 	
 	public void createSchema() {
-		String schema = Utils.getResource("/create_schema.sql");
+		
 		try {
-			connection.createStatement().executeUpdate(schema);
+			connection.createStatement().executeUpdate(querySchema);
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -35,8 +40,7 @@ public class SqliteStore {
 	public void addChecksum(GitFileDTO f, String gtag) {
 		try {
 			/* need to speed this up */
-			String query = Utils.getResource("/insert_checksum.sql");
-			PreparedStatement pstmt = connection.prepareStatement(query);
+			PreparedStatement pstmt = connection.prepareStatement(queryInsert);
 			pstmt.setString(1, f.getPath());
 			pstmt.setString(2, f.getSha1());
 			pstmt.setString(3, gtag);
