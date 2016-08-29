@@ -112,7 +112,11 @@ public class AnalyzeTaskQueue {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				xstore.add(p.getFilePath(), contentsToInsert,true);
+				try {
+					xstore.add(p.getFilePath(), contentsToInsert, true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
     }

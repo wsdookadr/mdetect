@@ -26,7 +26,7 @@ public class XmlStore {
 	/*
 	 * create database and schema
 	 */
-	public void createdb() {
+	public void createDB() {
 		context = new Context();
 		try {
 			/* check if the database is present, otherwise throw exception */
@@ -42,11 +42,7 @@ public class XmlStore {
 					 * then select the database to be used
 					 */
 					new CreateDB(dbName,"").execute(context);
-					new org.basex.core.cmd.Open("xtrees");
-					new CreateIndex(CmdIndex.FULLTEXT).execute(context);
-					new CreateIndex(CmdIndex.ATTRIBUTE).execute(context);
-					new CreateIndex(CmdIndex.TEXT).execute(context);
-					new org.basex.core.cmd.Flush().execute(context);
+					new org.basex.core.cmd.Open(dbName).execute(context);
 					session.execute("OPEN " + dbName);
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -57,6 +53,16 @@ public class XmlStore {
 		}
 		context.close();
 		
+	}
+	
+	public void createIndexes() {
+		try {
+			session.execute("OPEN " + dbName);
+			session.execute("CREATE INDEX text");
+			session.execute("CREATE INDEX attribute");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void makeSession() {
@@ -176,6 +182,8 @@ public class XmlStore {
 	public XmlStore() {
 		startServer();
 		makeSession();
+		createDB();
+		createIndexes();
 		addChecksumDoc();
 	}
 }

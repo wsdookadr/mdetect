@@ -55,20 +55,10 @@ public class Analyzer {
 	 * Note: This does follow a bit the logic of debsums
 	 * 
 	 */
-	public String dbPath = null;
-	public Connection connection = null;
-	
-	public String dbSchema = "";
+
 	public Analyzer() {
-		dbPath = "/tmp/sample.db";
-        try {
-          connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
-        } catch(SQLException e) {
-          System.err.println(e.getMessage());
-          System.exit(-1);
-        };
-        
-    }
+		
+	}
 	
 	/*
 	 * Find Git repositories (to retrieve checksums)

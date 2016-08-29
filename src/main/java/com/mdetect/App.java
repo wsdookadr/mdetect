@@ -56,7 +56,7 @@ public class App {
 			}
 			
 	 }
-	 
+
 	 public static void analyzeFileStructures(Analyzer a, Detector d, XmlStore xstore) {
 			/*
 			 * small test .php files (between 20kb and 50kb)
@@ -78,7 +78,6 @@ public class App {
 					//"/home/user/work/mdetect/data/wordpress/wp-includes/post.php",
 					//"/home/user/work/mdetect/data/drupal/core/modules/migrate_drupal/tests/fixtures/drupal6.php"
 			};
-
 			
 			// parse and store parse trees in the xml store
 			List<String> completeList = a.findFilesToAnalyze("/home/user/work/mdetect/data");
@@ -91,7 +90,6 @@ public class App {
 				tq.produce(testFiles.get(j));
 				tq.storePartialResultsInXMLStore();
 			}
-			tq.storePartialResultsInXMLStore();
 			tq.shutdown();
 			tq.storePartialResultsInXMLStore();
 	 }
@@ -99,11 +97,14 @@ public class App {
 	 public static void main(String[] args) {
 		Analyzer a = new Analyzer();
 		Detector d = new Detector();
+		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
-		xstore.createdb();
 		
 		//acquireMetadata(a,d,xstore);
-		analyzeFileStructures(a,d,xstore);
+		System.gc();
+		//analyzeFileStructures(a,d,xstore);
+		
+		sq.createSchema();
 
 		XmlStore.stopServer();
 		System.exit(0);
