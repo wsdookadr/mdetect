@@ -31,7 +31,7 @@ public class GitFileDTO {
 		this.sha1 = sha1;
 	}
 
-	GitFileDTO(int fileSize, String path, String sha1) {
+	public GitFileDTO(int fileSize, String path, String sha1) {
 		this.fileSize = fileSize;
 		this.path = path;
 		this.sha1 = sha1;

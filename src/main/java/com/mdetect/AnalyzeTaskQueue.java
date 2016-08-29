@@ -19,7 +19,6 @@ public class AnalyzeTaskQueue {
     private final ExecutorService service;
     private final XmlStore xstore;
     public final ConcurrentLinkedQueue<ParseTreeDTO> resultQueue;
-
     /*
      * The task queue uses a blocking work queue with a maximum size
      * (if the queue has reached maximum capacity, it will block
@@ -29,6 +28,8 @@ public class AnalyzeTaskQueue {
      * size, and a maximum of numActiveParallelWorkers will work on tasks
      * from the queue at any given time.
      * 
+     * The analysis (parsing) is done in parallel, and the writing
+     * to the datastore happens sequentially.
      */
     public AnalyzeTaskQueue(int numActiveParallelWorkers, int queueCapacity, XmlStore xstore) {
     	this.xstore = xstore;
@@ -60,7 +61,6 @@ public class AnalyzeTaskQueue {
     public void shutdown() {
     	while(!workQueue.isEmpty()) {
     		try {
-    			//System.out.println("waiting on work queue , size = " + workQueue.size());
 				Thread.sleep(1000);
 				System.out.println("is service term ? " + service.isTerminated());
 			} catch (InterruptedException e) {
@@ -88,8 +88,7 @@ public class AnalyzeTaskQueue {
     }
     
     /*
-     * Drain all existing processed results
-     * into a list and return it.
+     * Drain all processed results into a list and return it.
      */
     private ArrayList<ParseTreeDTO > retrieveResults() {
     	ArrayList<ParseTreeDTO > retrieved = new ArrayList<ParseTreeDTO >();
