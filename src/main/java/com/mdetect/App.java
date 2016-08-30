@@ -27,12 +27,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.saxon.Configuration;
-import net.sf.saxon.dom.DOMObjectModel;
-import net.sf.saxon.dom.DocumentWrapper;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.XdmNode;
-
 
 public class App {
 	/*
@@ -90,13 +84,6 @@ public class App {
 			tq.storePartialResultsInXMLStore();
 		}
 		tq.shutdown();
-		/*
-		 * store the resutls that were computed after all the work units were
-		 * sent out, and the executor was shut down (those were not drained in
-		 * the loop above because they were still processing after that loop
-		 * finished, so we collect the remaining ones below)
-		 */
-		tq.storePartialResultsInXMLStore();
 	 }
 
 	 public static void main(String[] args) {

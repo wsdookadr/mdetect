@@ -7,6 +7,9 @@
   in the database. Counts the function calls in each
   file and reports back a list of per-file counts.
 
+
+  TODO: Also need to account for variable function calls
+  //functionCall//functionCallName//chainBase//keyedVariable
 :)
 
 let $z := 1

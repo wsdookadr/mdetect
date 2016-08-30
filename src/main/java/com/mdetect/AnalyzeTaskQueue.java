@@ -69,11 +69,8 @@ public class AnalyzeTaskQueue {
 				e.printStackTrace();
 			}
     	}
-    	
     	System.out.println("shutdown..");
     	service.shutdown();
-    	System.out.println("queue size = " + workQueue.size());
-    	
     	/*
     	 * TODO: improve logic by which workers notify
     	 * of their available status, so we can ensure
@@ -86,7 +83,15 @@ public class AnalyzeTaskQueue {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-    	System.out.println("after await");
+    	System.out.println("[DBG] after worker shutdown");
+    	
+		/*
+		 * store the resutls that were computed after all the work units were
+		 * sent out, and the executor was shut down (those were not drained in
+		 * the loop above because they were still processing after that loop
+		 * finished, so we collect the remaining ones below)
+		 */
+		storePartialResultsInXMLStore();
     }
     
     /*

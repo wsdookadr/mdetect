@@ -33,25 +33,6 @@ import org.w3c.dom.Document;
 
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.om.Sequence;
-import net.sf.saxon.s9api.Axis;
-import net.sf.saxon.s9api.DocumentBuilder;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.QName;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.XPathCompiler;
-import net.sf.saxon.s9api.XPathExecutable;
-import net.sf.saxon.s9api.XPathSelector;
-import net.sf.saxon.s9api.XQueryCompiler;
-import net.sf.saxon.s9api.XQueryEvaluator;
-import net.sf.saxon.s9api.XQueryExecutable;
-import net.sf.saxon.s9api.XdmAtomicValue;
-import net.sf.saxon.s9api.XdmItem;
-import net.sf.saxon.s9api.XdmNode;
-import net.sf.saxon.s9api.XdmSequenceIterator;
-import net.sf.saxon.xpath.XPathEvaluator;
-
 import com.mdetect.*;
 import com.mdetect.PHPParser.HtmlDocumentContext;
 
@@ -124,8 +105,6 @@ public class Detector {
 	 *  	  the XML tree. 
 	 */
 
-	Processor xmlProcessor = null;
-	XdmNode xmlDoc = null;
 	Document domDoc = null;
 	/*
 	 * Returns a Parser object (that contains the AST)
@@ -178,52 +157,7 @@ public class Detector {
     	domDoc = ptSerializer.getDOMDocument();
     }
     
-    /*
-    public void runChecks() {
-    	System.out.println("in runChecks");
-    	// function call counts
-    	CountMap cFunctions  = new CountMap();
-    	// variable usages
-    	CountMap cVariables = new CountMap();
-    	// variable function calls
-    	CountMap cVarFun  = new CountMap();
-    	Integer evalCount = 0;
-    	Integer chrCount = 0;
-    	// for example \x29
-    	float hexLiteralChars = 0;
-    	List<XdmItem> matchFunctionCalls = runXPath(xmlDoc, "//functionCall//identifier");
-    	for(XdmItem f: matchFunctionCalls) {
-    		String fName = f.getStringValue();
-    		cFunctions.add(fName);
-    	}
-    	evalCount = cFunctions.getOrDefault("eval", 0);
-    	chrCount = cFunctions.getOrDefault("chr", 0);
-    	List<XdmItem> matchVariableFunctionCalls = runXPath(xmlDoc, "//functionCall//functionCallName//chainBase//keyedVariable");
-    	for(XdmItem f: matchVariableFunctionCalls) {
-    		String k = f.getStringValue();
-    		cVarFun.add(k);
-    	}
-    	//because <string> can have children like
-    	//<term> or <interpolatedStringPart>
-    	List<XdmItem> strings = runXPath(xmlDoc, "//string");
-    	for(XdmItem s: strings) {
-    		String sbuf = "";
-    		XdmNode snode = (XdmNode) s;
-    		XdmSequenceIterator iter = snode.axisIterator(Axis.CHILD);
-    		XdmItem snodeNext = null;
-            while(iter.hasNext()) {
-                snodeNext = (XdmNode)iter.next();
-                sbuf += snodeNext.getStringValue().trim();
-            }
-    		System.out.println("["+sbuf+"]");
-            //TODO: add regex logic to count hexliteralchars
-    	}
-    	
-    }
-	*/
-    
 	public Detector() {
-		xmlProcessor = new Processor(false);
 	}
 	
 	

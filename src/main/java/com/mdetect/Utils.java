@@ -20,11 +20,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
-import net.sf.saxon.Configuration;
-import net.sf.saxon.dom.DOMObjectModel;
-import net.sf.saxon.dom.DocumentWrapper;
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.XdmNode;
 
 public class Utils {
 
