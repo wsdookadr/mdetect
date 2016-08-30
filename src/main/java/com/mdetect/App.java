@@ -7,10 +7,6 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
-import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
-import com.googlecode.concurrenttrees.radix.RadixTree;
-import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharArrayNodeFactory;
-
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -47,15 +43,14 @@ public class App {
 	 * set of rules would mark some of them as being suspicious.
 	 * 
 	 */
-	 public static void acquireMetadata(Analyzer a, Detector d, XmlStore xstore,SqliteStore sq) {
+	 public static void acquireMetadata(String knownFilesPath, Analyzer a, Detector d, XmlStore xstore,SqliteStore sq) {
 		/* 
 		 * retrieve checksums and metadata for a set of files
 		 * and store their checksums and metadata.
 		 * 
 		 * duplicates on (path,sha1) will be excluded.
 		 */
-		List<String> gRepoPaths = a.findGitRepos("/home/user/work/mdetect/data");
-		
+		List<String> gRepoPaths = a.findGitRepos(knownFilesPath);
 		for (String gRepo : gRepoPaths) {
 			WriteQueue wq = new WriteQueue(xstore, sq);
 			GitStore g = new GitStore(gRepo);
@@ -68,7 +63,6 @@ public class App {
 					if(dupeSet.contains(dupeKey))
 							continue;
 					dupeSet.add(dupeKey);
-					
 					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
 					wq.produce(item);
 				}
@@ -76,18 +70,17 @@ public class App {
 				System.gc();
 			}
 			wq.shutdown();
-			
 		}
 	 }
 
-	 public static void analyzeCodeStructure(Analyzer a, Detector d, XmlStore xstore, SqliteStore sq) {
+	 public static void analyzeCodeStructure(String pathToAnalyze, Analyzer a, Detector d, XmlStore xstore, SqliteStore sq) {
 		/*
 		 * to get files between 20kb and 50kb find data/ -name "*.php" -size
 		 * +20000c -a -size -50000c
 		 * 
 		 */
 		/* parse and store parse trees in the xml store */
-		ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze("/home/user/work/mdetect/data");
+		ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze(pathToAnalyze);
 		int analyzeQueueCapacity = 1000;
 		int analyzeWorkers = 5;
 		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers, analyzeQueueCapacity, xstore, "/unknown/");
@@ -113,9 +106,9 @@ public class App {
 		XmlStore xstore = new XmlStore();
 		sq.createSchema();
 		
-		acquireMetadata(a,d,xstore,sq);
+		//acquireMetadata("/home/user/work/mdetect/data", a,d,xstore,sq);
 		System.gc();
-		//analyzeCodeStructure(a,d,xstore,sq);
+		analyzeCodeStructure("/home/user/work/mdetect/samples",a,d,xstore,sq);
 
 		XmlStore.stopServer();
 		System.exit(0);
