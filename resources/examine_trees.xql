@@ -4,16 +4,19 @@
   that were previously computed.
 
   It works by iterating over all documents(parse trees)
-  in the database. First, we extract only the function
-  calls and group them by files.
+  in the database. Counts the function calls in each
+  file and reports back a list of per-file counts.
 
 :)
 
 
 for $doc in db:list("xtrees")
 where matches($doc,"^.*\.php$")
+(:~ all function call nodes in the document :)
 let $anodes := db:open("xtrees",$doc)//functionCall//identifier
+(:~ names of the function calls :)
 let $tnodes := $anodes//text()
+(:~ distinct values thereof :)
 let $dnodes := distinct-values($tnodes)
 for $func in $dnodes
 let $cnt := count($anodes//[text()=$func])
@@ -21,6 +24,10 @@ group by $doc
 let $elem := element file {
   attribute path { $doc },
   $func ! (
+      (:~ 
+         retain implicit iterator of simple map operator in $x
+         in order to avoid ambiguity
+       :)
       let $x := .
       return
         element function {
