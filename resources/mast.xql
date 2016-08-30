@@ -47,6 +47,8 @@ declare function local:mast($node as node(), $d) {
         let $subtree_hash := crypto:hmac($msg,'hardcodedkey','md5','hex') 
         return element {$nn} {
           attribute h {$subtree_hash},
+          $node/@start,
+          $node/@end,
           $newc
         }
       )

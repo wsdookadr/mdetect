@@ -1,6 +1,9 @@
 (:~ 
   Here, we check the nature of the strings in programs.
-  We're looking for base64 strings or for hexliterals.
+  We're looking for base64 strings or for hexliterals
+  
+  reference for the b64 regex: http://stackoverflow.com/a/8571649/827519
+  
  :) 
 
 
@@ -42,3 +45,5 @@ let $partial  := (
     )
 for $p in $partial
   return $p//@lb64/string()
+  
+  
