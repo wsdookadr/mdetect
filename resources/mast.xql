@@ -13,7 +13,8 @@
   
   Use-case: we use the MAST to identify subtrees that carry the same form.
   
-  http://www.mit.edu/~jlrubin/public/pdfs/858report.pdf
+  [1] https://hal.archives-ouvertes.fr/hal-00627811/document
+  [2] http://www.mit.edu/~jlrubin/public/pdfs/858report.pdf
     
 :)
 
