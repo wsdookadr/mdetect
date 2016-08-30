@@ -14,7 +14,7 @@ let $partial :=
     let $anodes1 := db:open("xtrees",$doc)//variableInitializer//*[matches(text(),"^\$")]
     let $anodes2 := db:open("xtrees",$doc)//keyedVariable//*[matches(text(),"^\$")]
     let $anodes := ($anodes1 | $anodes2)
-    (:~ names of the function calls :)
+    (:~ names of the variables :)
     let $tnodes := $anodes//text()
     (:~ distinct values thereof :)
     let $dnodes := distinct-values($tnodes)
