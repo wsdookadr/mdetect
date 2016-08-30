@@ -13,16 +13,17 @@
 for $doc in db:list("xtrees")
 where matches($doc,"^.*\.php$")
 let $anodes := db:open("xtrees",$doc)//functionCall//identifier
-let $dnodes := distinct-values($anodes//text())
+let $tnodes := $anodes//text()
+let $dnodes := distinct-values($tnodes)
 for $func in $dnodes
-group by $doc,$func
-let $cnt := $anodes//*[text()=$func]
+let $cnt := count($anodes//[text()=$func])
+group by $doc
 let $elem := element file {
   attribute path { $doc },
-  $func ! element call {
-    attribute cnt { count($cnt) },
-    data() 
-  }
+  $func ! (element call {
+      let $x :=.
+      return
+        count(filter($anodes//[text()=$x], function($y) {$y = true()} ))
+  })
 }
 return $elem
-
