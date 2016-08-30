@@ -20,10 +20,13 @@ let $cnt := count($anodes//[text()=$func])
 group by $doc
 let $elem := element file {
   attribute path { $doc },
-  $func ! (element call {
-      let $x :=.
+  $func ! (
+      let $x := .
       return
-        count(filter($anodes//[text()=$x], function($y) {$y = true()} ))
-  })
+        element function {
+          attribute name { $x } ,
+          count(filter($anodes//[text()=$x], function($y) {$y = true()} ))
+        }
+  )
 }
 return $elem
