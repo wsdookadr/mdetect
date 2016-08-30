@@ -111,24 +111,6 @@ public class Utils {
 		return result;
 	}
 
-	/*
-	 * 
-	 * Convert a org.w3c.dom.Document => net.sf.saxon.dom.DocumentWrapper =>
-	 * net.sf.saxon.s9api.XdmNode
-	 * 
-	 */
-	public static XdmNode convertDOMToXDM(Document dom) {
-		if (dom == null) {
-			System.out.println("document is null");
-			return null;
-		}
-		Processor proc = new Processor(false);
-		Configuration config = proc.getUnderlyingConfiguration();
-		config.registerExternalObjectModel(new DOMObjectModel());
-		DocumentWrapper dw = new DocumentWrapper(dom, dom.getBaseURI(), config);
-		XdmNode xdmRoot = new XdmNode(dw.getRootNode());
-		return xdmRoot;
-	}
 
 	public static void processAndStore(String filePath, Detector d, XmlStore xstore) {
 		d.processFile(filePath);

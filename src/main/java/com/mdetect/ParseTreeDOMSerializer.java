@@ -8,6 +8,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.misc.Pair;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -22,8 +26,10 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
 	private Document domDoc = null;
 	private Stack<Element> nodeStack = null;
 	private boolean debugMode = false;
+	private TokenStream tokenStream = null;
     private final List<String> ruleNames;
-    public ParseTreeDOMSerializer(List<String> ruleNames, Map<Integer, String> invTokenMap) {
+    public ParseTreeDOMSerializer(List<String> ruleNames, Map<Integer, String> invTokenMap, TokenStream tokenStream) {
+    	this.tokenStream = tokenStream;
         this.ruleNames = ruleNames;
         this.invTokenMap = invTokenMap;
         nodeStack = new Stack<Element>();
@@ -51,6 +57,7 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
      */
     public String extractRuleName(ParserRuleContext ctx) {
         int ruleIndex = ctx.getRuleIndex();
+        
         String ruleName;
         if (ruleIndex >= 0 && ruleIndex < ruleNames.size()) {
             ruleName = ruleNames.get(ruleIndex);
@@ -58,6 +65,15 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
             ruleName = Integer.toString(ruleIndex);
         };
         return ruleName;
+    }
+    
+    public Pair<Integer, Integer> getLineRange(ParserRuleContext ctx) {
+    	Pair<Integer, Integer> result = null; 
+    	Interval sourceInterval = ctx.getSourceInterval();
+    	Token firstToken = tokenStream.get(sourceInterval.a);
+    	Token lastToken = tokenStream.get(sourceInterval.b);
+    	result = new Pair<Integer, Integer>(firstToken.getLine(), lastToken.getLine());
+    	return result;
     }
     
     @Override
@@ -76,7 +92,13 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
     @Override
     public void enterEveryRule(ParserRuleContext ctx) { 
         String ruleName = extractRuleName(ctx);
+        Pair<Integer, Integer> interval = getLineRange(ctx);
         Element newNode = (Element) domDoc.createElement(ruleName);
+		if (interval != null) {
+			newNode.setAttribute("start", Integer.toString(interval.a));
+			newNode.setAttribute("end", Integer.toString(interval.b));
+		}
+		
 		if (debugMode) {
 			System.out.println("enter->" + ruleName);
 		}

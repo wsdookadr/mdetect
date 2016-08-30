@@ -20,6 +20,7 @@ import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.Pair;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -167,10 +168,12 @@ public class Detector {
          * htmlDocument is the start rule (the top-level rule)
          * for the PHP grammar
          */
+    	
     	ParserRuleContext tree =   parser.htmlDocument();
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);
-    	ParseTreeDOMSerializer ptSerializer = new ParseTreeDOMSerializer(ruleNames, invTokenMap);
+    	TokenStream tokenStream = parser.getTokenStream();
+    	ParseTreeDOMSerializer ptSerializer = new ParseTreeDOMSerializer(ruleNames, invTokenMap, tokenStream);
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
     	domDoc = ptSerializer.getDOMDocument();
     }
