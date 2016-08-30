@@ -40,7 +40,8 @@ public class App {
 	 public static void acquireMetadata(String knownFilesPath, Analyzer a, Detector d, XmlStore xstore,SqliteStore sq) {
 		/* 
 		 * retrieve checksums and metadata for a set of files
-		 * and store their checksums and metadata.
+		 * and store their checksums and metadata in the sqlite
+		 * data store.
 		 * 
 		 * duplicates on (path,sha1) will be excluded.
 		 */
@@ -68,11 +69,6 @@ public class App {
 	 }
 
 	 public static void analyzeCodeStructure(String pathToAnalyze, Analyzer a, Detector d, XmlStore xstore, SqliteStore sq) {
-		/*
-		 * to get files between 20kb and 50kb find data/ -name "*.php" -size
-		 * +20000c -a -size -50000c
-		 * 
-		 */
 		/* parse and store parse trees in the xml store */
 		ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze(pathToAnalyze);
 		int analyzeQueueCapacity = 1000;
@@ -85,6 +81,7 @@ public class App {
 		}
 		tq.shutdown();
 	 }
+	 
 
 	 public static void main(String[] args) {
 		Analyzer a = new Analyzer();

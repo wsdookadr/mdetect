@@ -18,7 +18,7 @@
     
 :)
 
-declare function local:mast($node as node(), $d) {
+declare function local:mast($node, $d) {
   typeswitch($node)
     case element()
     return 
@@ -58,5 +58,20 @@ declare function local:mast($node as node(), $d) {
     default return ()
 };
 
-local:mast(db:open("xtrees","unknown/home/user/work/mdetect/samples/mod_system/adodb.class.php")/node(),1)
+(:~ get all documents, build
+    their MAST, and store it back into the
+    datastore
+  :)
+for $doc in db:list("xtrees")
+where matches($doc,"^.*\.php")
+let $tree := db:open("xtrees", $doc)
+let $mast_name := "/mast/" || $doc
+let $mast_tree := local:mast($tree/node(),1)
+return 
+  if($mast_tree/*)
+  then db:add("xtrees",$mast_tree,$mast_name)
+  else ()
+  
+
+
 
