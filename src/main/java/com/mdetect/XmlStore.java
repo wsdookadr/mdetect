@@ -184,10 +184,5 @@ public class XmlStore {
 		createDB();
 		createIndexes();
 		addChecksumDoc();
-		/* 
-		 * the server was only needed to create the database, we'll use the
-		 * client session from now on.
-		 */
-		
 	}
 }
