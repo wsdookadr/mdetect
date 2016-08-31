@@ -104,8 +104,6 @@ public class Detector {
 	 *  	  Need to fix that either by serializing valid XML, or directly building
 	 *  	  the XML tree. 
 	 */
-
-	Document domDoc = null;
 	/*
 	 * Returns a Parser object (that contains the AST)
 	 */
@@ -138,7 +136,7 @@ public class Detector {
     	return invMap;
     }
 
-    public void processFile(String filePath) {
+    public Document processFile(String filePath) {
     	Pair<Parser, Lexer> pl = parsePHP(filePath);
     	PHPParser parser = (PHPParser) pl.a;
     	parser.setBuildParseTree(true);
@@ -154,7 +152,8 @@ public class Detector {
     	TokenStream tokenStream = parser.getTokenStream();
     	ParseTreeDOMSerializer ptSerializer = new ParseTreeDOMSerializer(ruleNames, invTokenMap, tokenStream);
     	ParseTreeWalker.DEFAULT.walk(ptSerializer, tree);
-    	domDoc = ptSerializer.getDOMDocument();
+    	Document result= ptSerializer.getDOMDocument();
+    	return result;
     }
     
 	public Detector() {

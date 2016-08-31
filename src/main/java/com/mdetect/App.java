@@ -138,6 +138,7 @@ public class App {
 		Map<String, String> cmdLineParams = parseCmdLineParams(args);
 		Analyzer a = new Analyzer();
 		Detector d = new Detector();
+		
 		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
 		sq.createSchema();

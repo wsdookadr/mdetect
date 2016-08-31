@@ -138,8 +138,7 @@ public class Utils {
 	}
 
 	public static void processAndStore(String filePath, Detector d, XmlStore xstore) {
-		d.processFile(filePath);
-		Document w = d.domDoc;
+		Document w = d.processFile(filePath); 
 		String contentsToInsert = "";
 		try {
 			contentsToInsert = Utils.serializeDOMDocument(w);

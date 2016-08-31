@@ -19,8 +19,7 @@ public class AnalyzeWorker extends TaskWorker<String, ParseTreeDTO> {
 	@Override
 	public ParseTreeDTO workUnit(String filePath) {
 		d = new Detector();
-		d.processFile(filePath);
-		Document processedDoc = d.domDoc;
+		Document processedDoc = d.processFile(filePath);
 		System.out.println("worker " + this.workerId + " finished task " + filePath);
 		ParseTreeDTO result = new ParseTreeDTO(processedDoc, filePath, "");
 		return result;
