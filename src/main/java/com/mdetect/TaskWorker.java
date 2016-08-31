@@ -33,7 +33,9 @@ public class TaskWorker<I, O> implements Runnable {
             	 */
                 I item = workQueue.take();
                 O result = workUnit(item);
-                resultQueue.add(result);
+                if(result != null) {
+                	resultQueue.add(result);
+                };
                 System.out.println("worker " + Integer.toString(workerId) + " finished [" + item.toString() + "]");
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();

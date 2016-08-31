@@ -55,6 +55,22 @@ public class SqliteStore {
 		}
 	}
 	
+	public boolean hasChecksum(String sha1) {
+		try {
+			PreparedStatement p = prepare("SELECT COUNT(*) FROM gitfiles WHERE sha1 = ?;");
+			p.setString(1, sha1);
+			ResultSet r = p.executeQuery();
+			r.next();
+			boolean result = (r.getInt(1) > 0);
+			r.close();
+			p.close();
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public PreparedStatement prepare(String query) {
 		try {
 			return connection.prepareStatement(query);

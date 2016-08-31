@@ -40,7 +40,6 @@ public class App {
 		options.addOption(
 				OptionBuilder
 				.withLongOpt("checksum")
-				.isRequired()
 				.hasArg(true)
 				.withDescription("path to PHP source code to be checksumed and whitelisted")
 				.create('c')
@@ -142,7 +141,6 @@ public class App {
 		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
 		sq.createSchema();
-		
 
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
@@ -156,7 +154,6 @@ public class App {
 		XmlStore.stopServer();
 		System.exit(0);
 	 }
-	 
 	 
 }
 

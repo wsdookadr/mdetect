@@ -120,21 +120,21 @@ public class Utils {
 		File file = new File(path);
 		long length = file.length();
 		byte[] content = null;
-		byte[] sha1 = null;
+		String sha1 = null;
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(path);
 			content = IOUtils.toByteArray(fis);
 			byte header[] = String.format("blob %d\0", length).getBytes();
 			byte[] toHash = new byte[header.length + content.length];
-			System.arraycopy(header,0,toHash,0,header.length);
-			System.arraycopy(content, 0, toHash, 0, content.length);
-			sha1 = DigestUtils.sha1(toHash);
+			System.arraycopy(header ,0,toHash,			  0,header.length);
+			System.arraycopy(content,0,toHash,header.length,content.length);
+			sha1 = DigestUtils.sha1Hex(toHash);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-		return sha1.toString();
+		return sha1;
 	}
 
 	public static void processAndStore(String filePath, Detector d, XmlStore xstore) {
