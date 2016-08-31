@@ -11,7 +11,14 @@ import org.w3c.dom.Document;
  */
 public class AnalyzeWorker extends TaskWorker<String, ParseTreeDTO> {
 	public Detector d = null;
+	
+	/*
+	 * since this worker is run in its separate thread, there will be
+	 * one sqlite connection per thread.
+	 * https://www.sqlite.org/threadsafe.html
+	 */
 	private SqliteStore sq = null;
+	
 	public AnalyzeWorker(BlockingQueue<String> workQueue, ConcurrentLinkedQueue<ParseTreeDTO> resultQueue, int i) {
 		super(workQueue, resultQueue, i);
 		this.sq = new SqliteStore();
