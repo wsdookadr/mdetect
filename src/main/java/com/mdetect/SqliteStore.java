@@ -7,14 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 public class SqliteStore {
 	public String dbPath = null;
 	public Connection connection = null;
 	
 	public String queryInsert = null;
 	public String querySchema = null;
-	public String queryLookup = null;
-	
 	
 	public String dbSchema = "";
 	public SqliteStore() {
@@ -34,7 +33,7 @@ public class SqliteStore {
 		
 		try {
 			connection.createStatement().executeUpdate(querySchema);
-			
+			commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -56,26 +55,13 @@ public class SqliteStore {
 		}
 	}
 	
-	/*
-	 * Receives as parameter a path to a file on disk.
-	 * Checks if that file is part of the checksum whitelist present
-	 * in the sqlite table.
-	 * 
-	 */
-	public boolean lookupFile(String path){
-		/* TODO: finish implementing this */
-		String sha1 = Utils.gitHash(path);
-		PreparedStatement pstmt;
+	public PreparedStatement prepare(String query) {
 		try {
-			pstmt = connection.prepareStatement(queryInsert);
-			pstmt.setString(1, sha1);
-			pstmt.execute();
-			ResultSet r = pstmt.getResultSet();
-			String result = r.getString(1);
+			return connection.prepareStatement(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 	
 	public void commit() {
@@ -85,8 +71,5 @@ public class SqliteStore {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
 	
 }

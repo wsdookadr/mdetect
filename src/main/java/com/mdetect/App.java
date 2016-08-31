@@ -93,7 +93,12 @@ public class App {
 		return cmdLineParams;
 	}
 	
-	 public static void acquireMetadata(String knownFilesPath, Analyzer a, Detector d, XmlStore xstore,SqliteStore sq) {
+	 public static void acquireMetadata(
+			 String knownFilesPath,
+			 Analyzer a,
+			 Detector d,
+			 XmlStore xstore,
+			 SqliteStore sq) {
 		/* 
 		 * retrieve checksums and metadata for a set of files
 		 * and store their checksums and metadata in the sqlite
@@ -107,12 +112,13 @@ public class App {
 			GitStore g = new GitStore(gRepo);
 			List<GitTagDTO> gitTags = g.getAllTags();
 			HashSet<String> dupeSet = new HashSet<String>();
-			for (GitTagDTO tag : gitTags) {
+			g.reset();
+			for(GitTagDTO tag : gitTags) {
 				LinkedBlockingQueue<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
-				for (GitFileDTO f : gitFiles) {
+				for(GitFileDTO f : gitFiles) {
 					String dupeKey = f.getPath() + f.getSha1();
 					if(dupeSet.contains(dupeKey))
-							continue;
+						continue;
 					dupeSet.add(dupeKey);
 					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
 					wq.produce(item);
@@ -124,7 +130,12 @@ public class App {
 		}
 	 }
 
-	 public static void analyzeCodeStructure(String pathToAnalyze, Analyzer a, Detector d, XmlStore xstore, SqliteStore sq) {
+	public static void analyzeCodeStructure(
+			String pathToAnalyze,
+			Analyzer a,
+			Detector d,
+			XmlStore xstore,
+			SqliteStore sq) {
 		/* parse and store parse trees in the xml store */
 		ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze(pathToAnalyze);
 		int analyzeQueueCapacity = 1000;
@@ -136,7 +147,7 @@ public class App {
 			tq.storePartialResultsInXMLStore();
 		}
 		tq.shutdown();
-	 }
+	}
 
 	public static void main(String[] args) throws Exception {
 		Map<String, String> cmdLineParams = parseCmdLineParams(args);
@@ -145,13 +156,17 @@ public class App {
 		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
 		sq.createSchema();
+		
+
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
 			analyzeCodeStructure(path,a,d,xstore,sq);	
 		}else if(cmdLineParams.containsKey("checkPath")) {
 			String path = cmdLineParams.get("checkPath");
-			acquireMetadata(path, a,d,xstore,sq);
+			acquireMetadata(path,a,d,xstore,sq);
 		}
+		
+		
 		XmlStore.stopServer();
 		System.exit(0);
 	 }

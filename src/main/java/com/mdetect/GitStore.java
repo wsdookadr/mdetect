@@ -8,6 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
@@ -45,6 +46,27 @@ public class GitStore {
 		try {
 			git = Git.open(new File(gitRepoPath));
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	/*
+	 * Add shutdown hander for SIGINT, and reset --hard HEAD
+	 * repositories before starting.
+	 * http://stackoverflow.com/a/2541950/827519
+	 * http://stackoverflow.com/a/1216188/827519
+	 */
+	
+	public void reset() {
+		/* delete lock file if one is present */
+		File f = new File(gitRepoPath + "/.git/index.lock");
+		if(f.exists()) {
+			f.delete();
+		}
+		
+		/* reset --hard HEAD */
+		try {
+			git.reset().setMode(ResetType.HARD).call();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
