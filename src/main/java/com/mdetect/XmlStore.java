@@ -8,6 +8,9 @@ import org.basex.io.out.ArrayOutput;
 import org.basex.io.serial.Serializer;
 import org.basex.query.QueryException;
 import org.basex.query.QueryProcessor;
+import org.basex.query.iter.Iter;
+import org.basex.query.value.Value;
+import org.basex.query.value.item.Item;
 import org.basex.util.Prop;
 import org.basex.core.parse.Commands.CmdIndex;
 import org.basex.util.list.StringList;
@@ -21,7 +24,7 @@ public class XmlStore {
 	public String dbName = "xtrees";
 	ClientSession session = null;
 	static BaseXServer server = null;
-	protected static Context context;
+	protected Context context;
 
 	/*
 	 * create database and schema
@@ -52,7 +55,6 @@ public class XmlStore {
 			}
 		}
 		context.close();
-		
 	}
 	
 	public void createIndexes() {
@@ -123,22 +125,48 @@ public class XmlStore {
 	}
 	
 	protected String eval(final String query) throws QueryException, IOException {
-		final ArrayOutput ao = new ArrayOutput();
-		try (final QueryProcessor qp = new QueryProcessor(query, context)) {
-			qp.register(context);
-			try (final Serializer ser = qp.getSerializer(ao)) {
-				qp.value().serialize(ser);
-			} catch(Exception e) {
-				e.printStackTrace();
-			} finally {
-				qp.unregister(context);
-			}
-			
-		} catch(Exception e) {
-			e.printStackTrace();
+		String result;
+		try (QueryProcessor proc = new QueryProcessor(query, context)) {
+			// Execute the query
+			Value r = proc.value();
+			// Print result as string.
+			System.out.println(r.toString());
+			result = r.toString();
 		}
-		return ao.toString();
+		return result;
 	}
+
+	void iterate(final String query) throws QueryException {
+		// Create a query processor
+		try (QueryProcessor proc = new QueryProcessor(query, context)) {
+			// Store the pointer to the result in an iterator:
+			Iter iter = proc.iter();
+
+			// Iterate through all items and serialize
+			for (Item item; (item = iter.next()) != null;) {
+				System.out.println(item.toJava());
+			}
+		}
+	}
+
+	void serialize(final String query) throws QueryException, IOException {
+		// Create a query processor
+		try (QueryProcessor proc = new QueryProcessor(query, context)) {
+
+			// Store the pointer to the result in an iterator:
+			Iter iter = proc.iter();
+
+			// Create a serializer instance
+			try (Serializer ser = proc.getSerializer(System.out)) {
+				// Iterate through all items and serialize contents
+				for (Item item; (item = iter.next()) != null;) {
+					ser.serialize(item);
+				}
+			}
+			System.out.println();
+		}
+	}
+
 	
 	public String query(String query) {
 		try {
@@ -152,13 +180,14 @@ public class XmlStore {
 		return null;
 	}
 
-	public static void startServer() {
+	public void startServer() {
 		try {
 			int serverPort = 1984;
 		    final String path = System.getenv("HOME") + "/BaseXData";
 		    final StringList sl = new StringList("-z", "-p " + Integer.toString(serverPort), "-q");
 			context = new Context();
 		    server = new BaseXServer(sl.finish());
+		   
 		    Prop.put(StaticOptions.DBPATH, path + "/");
 		    Prop.put(StaticOptions.WEBPATH, path + "/webapp");
 		    Prop.put(StaticOptions.RESTXQPATH, path + "/webapp");
@@ -169,7 +198,7 @@ public class XmlStore {
 		}
 	}
 
-	public static void stopServer()  {
+	public void stopServer()  {
 		if (server != null) {
 			try {
 				server.stop();
@@ -185,5 +214,10 @@ public class XmlStore {
 		createDB();
 		createIndexes();
 		addChecksumDoc();
+		/* 
+		 * the server was only needed to create the database, we'll use the
+		 * client session from now on.
+		 */
+		
 	}
 }

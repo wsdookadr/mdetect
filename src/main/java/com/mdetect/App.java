@@ -137,11 +137,13 @@ public class App {
 		Map<String, String> cmdLineParams = parseCmdLineParams(args);
 		Analyzer a = new Analyzer();
 		Detector d = new Detector();
-		
 		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
+		ASTCheckRunner cr = new ASTCheckRunner(xstore);
 		sq.createSchema();
 
+		
+		
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
 			analyzeCodeStructure(path,a,d,xstore,sq);	
@@ -149,9 +151,8 @@ public class App {
 			String path = cmdLineParams.get("checkPath");
 			acquireMetadata(path,a,d,xstore,sq);
 		}
-		
-		
-		XmlStore.stopServer();
+		xstore.stopServer();
+		cr.check1();
 		System.exit(0);
 	 }
 	 
