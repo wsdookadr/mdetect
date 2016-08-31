@@ -60,7 +60,6 @@ public class ParseTreeStringSerializer implements ParseTreeListener {
         xmlBuffer += "<" + ruleName + ">\n";
         
 		if (ctx.getText() != null && ctx.getChildCount() == 0) {
-			//xmlBuffer += ctx.getText() + "\n";
 		}
     }
     
