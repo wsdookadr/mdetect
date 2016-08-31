@@ -30,18 +30,6 @@ public class Utils {
 	 * serialize Document
 	 */
 	public static String serializeDOMDocument(org.w3c.dom.Document doc) {
-		/*
-		 * DOMImplementationLS domImplementation = (DOMImplementationLS)
-		 * doc.getImplementation(); LSSerializer lsSerializer =
-		 * domImplementation.createLSSerializer(); String bodyXML =
-		 * lsSerializer.writeToString(doc); return bodyXML;
-		 */
-
-		// DocumentBuilderFactory domFact =
-		// DocumentBuilderFactory.newInstance();
-		// DocumentBuilder builder = domFact.newDocumentBuilder();
-		// Document doc = builder.parse(st);
-
 		DOMSource domSource = new DOMSource(doc);
 		StringWriter writer = new StringWriter();
 		StreamResult result = new StreamResult(writer);
@@ -61,21 +49,6 @@ public class Utils {
 		}
 		String xmlString = writer.toString();
 		return xmlString;
-
-		/*
-		 * DOMImplementationRegistry registry; try { registry =
-		 * DOMImplementationRegistry.newInstance(); } catch (Exception e) {
-		 * e.printStackTrace(); return null; } DOMImplementationLS domImplLS =
-		 * (DOMImplementationLS) registry.getDOMImplementation("LS");
-		 * 
-		 * LSSerializer lsSerializer = domImplLS.createLSSerializer();
-		 * DOMConfiguration domConfig = lsSerializer.getDomConfig();
-		 * domConfig.setParameter("format-pretty-print", true);
-		 * 
-		 * LSOutput lsOutput = domImplLS.createLSOutput();
-		 * lsOutput.setEncoding("UTF-8"); return
-		 * lsSerializer.writeToString(doc);
-		 */
 	}
 
 	public static Document buildTestDOM() {
