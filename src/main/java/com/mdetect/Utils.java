@@ -6,10 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -23,6 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.InputSource;
 
 
 public class Utils {
@@ -49,6 +52,21 @@ public class Utils {
 		}
 		String xmlString = writer.toString();
 		return xmlString;
+	}
+	
+	public static Document parseToDOM(String s) {
+		DocumentBuilder db;
+		Document doc = null;
+		try {
+			db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			InputSource is = new InputSource();
+			is.setCharacterStream(new StringReader(s));
+			doc = db.parse(is);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return doc;
 	}
 
 	public static Document buildTestDOM() {

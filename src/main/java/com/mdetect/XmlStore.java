@@ -19,6 +19,7 @@ import org.basex.BaseXServer;
 import org.basex.api.client.ClientQuery;
 import org.basex.api.client.ClientSession;
 import java.io.*;
+import java.util.ArrayList;
 
 public class XmlStore {
 	public String dbName = "xtrees";
@@ -124,50 +125,19 @@ public class XmlStore {
 		}
 	}
 	
-	protected String eval(final String query) throws QueryException, IOException {
-		String result;
+	ArrayList<String> eval(final String query) throws QueryException, IOException {
+		ArrayList<String> result = new ArrayList<String>();
+		// Create a query processor
 		try (QueryProcessor proc = new QueryProcessor(query, context)) {
-			// Execute the query
-			Value r = proc.value();
-			// Print result as string.
-			System.out.println(r.toString());
-			result = r.toString();
+			Iter iter = proc.iter();
+			for (Item item; (item = iter.next()) != null;) {
+				result.add(item.serialize().toString());
+			}
 		}
 		return result;
 	}
 
-	void iterate(final String query) throws QueryException {
-		// Create a query processor
-		try (QueryProcessor proc = new QueryProcessor(query, context)) {
-			// Store the pointer to the result in an iterator:
-			Iter iter = proc.iter();
 
-			// Iterate through all items and serialize
-			for (Item item; (item = iter.next()) != null;) {
-				System.out.println(item.toJava());
-			}
-		}
-	}
-
-	void serialize(final String query) throws QueryException, IOException {
-		// Create a query processor
-		try (QueryProcessor proc = new QueryProcessor(query, context)) {
-
-			// Store the pointer to the result in an iterator:
-			Iter iter = proc.iter();
-
-			// Create a serializer instance
-			try (Serializer ser = proc.getSerializer(System.out)) {
-				// Iterate through all items and serialize contents
-				for (Item item; (item = iter.next()) != null;) {
-					ser.serialize(item);
-				}
-			}
-			System.out.println();
-		}
-	}
-
-	
 	public String query(String query) {
 		try {
 			session.execute("OPEN " + this.dbName);

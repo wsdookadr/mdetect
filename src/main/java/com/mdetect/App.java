@@ -143,7 +143,7 @@ public class App {
 		sq.createSchema();
 
 		
-		
+		/*
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
 			analyzeCodeStructure(path,a,d,xstore,sq);	
@@ -151,6 +151,8 @@ public class App {
 			String path = cmdLineParams.get("checkPath");
 			acquireMetadata(path,a,d,xstore,sq);
 		}
+		*/
+		
 		xstore.stopServer();
 		cr.check1();
 		System.exit(0);
