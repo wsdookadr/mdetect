@@ -1,4 +1,3 @@
-
 Overview
 ========
 
@@ -10,12 +9,16 @@ up checksums in a datastore, for the PHP code of unknown provenance,
 it runs different heuristics to assess if the code contains logic that
 might be malicious.
 
-The use-cases for this tool are the following:
+The high-level use-cases for this tool are the following:
 - as a preventive check on file upload
 - in the aftermath of a break-in, for cleanup purposes
 - as a peridoic check of existing code on a machine, to assess the existance
   of potentially suspicious behaviour
 
+The more specific use-cases are:
+- building a whitelist checksum database of a set of codebases
+- finding files that might be malicious according to certain rules
+- finding files that have the same structure as a given file
 
 Details
 =======

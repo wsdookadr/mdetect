@@ -82,12 +82,6 @@ public class Detector {
 	 * Will figure out how much of the logic will be in SQL and how much will
 	 * be kept in Java. 
 	 * 
-	 * Reference PHP grammar (for the 5.6.25 release)
-	 * https://github.com/php/php-src/blob/e37064dae4a80c70405899bb591969bbe6aad9a8/Zend/zend_language_parser.y
-	 * 
-	 * Note: To speed things up, threads will be used to parse the 
-	 * 		 codebase in parallel
-	 * 
 	 * Optional: Maybe also add logic to detect commonly used obfuscators:
 	 * 
 	 * - http://www.pipsomania.com/best_php_obfuscator.do
@@ -140,12 +134,10 @@ public class Detector {
     	Pair<Parser, Lexer> pl = parsePHP(filePath);
     	PHPParser parser = (PHPParser) pl.a;
     	parser.setBuildParseTree(true);
-    	
         /* 
          * htmlDocument is the start rule (the top-level rule)
          * for the PHP grammar
          */
-    	
     	ParserRuleContext tree =   parser.htmlDocument();
     	List<String> ruleNames = Arrays.asList(parser.getRuleNames());
     	Map<Integer, String> invTokenMap = getInvTokenMap(parser);

@@ -12,8 +12,8 @@
   //functionCall//functionCallName//chainBase//keyedVariable
 :)
 
-let $z := 1
-return element root {
+let $partial := 
+    element root {
     for $doc in db:list("xtrees")
     where matches($doc,"^.*\.php$")
     (:~ all function call nodes in the document :)
@@ -45,3 +45,12 @@ return element root {
     (:? return json:serialize($elem, map { 'format': 'jsonml' }) :)
     return $elem
 }
+for $doc in $partial/node()
+  let $sum  := sum($doc//function//@count//number())
+  return element {$doc/node-name()} {
+    attribute path {$doc/@path},
+    for $func in $doc//function
+      let $prob    := round-half-to-even($func//@count//number() div $sum, 3)
+      return $func update insert node attribute prob {$prob} into .
+    }
+
