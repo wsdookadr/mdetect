@@ -111,9 +111,12 @@ public class Utils {
 	}
 	
 	/*
-	 * Git-compatible SHA-1 checksum
+	 * This method computes a Git-compatible SHA-1 checksum.
 	 * 
-	 * blob <length>\0content
+	 * Git takes a hash of the content formatted like this:
+	 * 
+	 * 		blob <length>\0content
+	 * 
 	 * reference https://git-scm.com/book/en/v2/Git-Internals-Git-Objects#Object-Storage
 	 */
 	public static String gitHash(String path) {
