@@ -1,13 +1,5 @@
 package com.mdetect;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
-
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -17,10 +9,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.basex.query.QueryException;
-import org.eclipse.jgit.api.Git;
-import org.w3c.dom.DOMConfiguration;
-import org.w3c.dom.Document;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,10 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 
 public class App {
@@ -48,7 +33,7 @@ public class App {
 	 */
 	
 	@SuppressWarnings("deprecation")
-	private static HashMap<String, String> parseCmdLineParams(String[] args) {
+	private static Map<String, String> parseCmdLineParams(String[] args) {
 		HashMap<String, String> cmdLineParams = new HashMap<String, String>();
 		CommandLineParser parser = new PosixParser();
 		Options options = new Options();
