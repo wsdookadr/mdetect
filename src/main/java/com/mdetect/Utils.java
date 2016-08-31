@@ -1,5 +1,8 @@
 package com.mdetect;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +17,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -105,7 +109,33 @@ public class Utils {
 		}
 		return result;
 	}
-
+	
+	/*
+	 * Git-compatible SHA-1 checksum
+	 * 
+	 * blob <length>\0content
+	 * reference https://git-scm.com/book/en/v2/Git-Internals-Git-Objects#Object-Storage
+	 */
+	public static String gitHash(String path) {
+		File file = new File(path);
+		long length = file.length();
+		byte[] content = null;
+		byte[] sha1 = null;
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(path);
+			content = IOUtils.toByteArray(fis);
+			byte header[] = String.format("blob %d\0", length).getBytes();
+			byte[] toHash = new byte[header.length + content.length];
+			System.arraycopy(header,0,toHash,0,header.length);
+			System.arraycopy(content, 0, toHash, 0, content.length);
+			sha1 = DigestUtils.sha1(toHash);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return sha1.toString();
+	}
 
 	public static void processAndStore(String filePath, Detector d, XmlStore xstore) {
 		d.processFile(filePath);

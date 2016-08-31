@@ -81,7 +81,6 @@ public class App {
 		}
 		tq.shutdown();
 	 }
-	 
 
 	 public static void main(String[] args) {
 		Analyzer a = new Analyzer();
@@ -92,7 +91,8 @@ public class App {
 		
 		//acquireMetadata("/home/user/work/mdetect/data", a,d,xstore,sq);
 		System.gc();
-		analyzeCodeStructure("/home/user/work/mdetect/samples",a,d,xstore,sq);
+		//analyzeCodeStructure("/home/user/work/mdetect/samples",a,d,xstore,sq);
+		analyzeCodeStructure("/home/user/work/mdetect/data/wordpress",a,d,xstore,sq);
 
 		XmlStore.stopServer();
 		System.exit(0);
