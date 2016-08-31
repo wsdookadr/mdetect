@@ -26,7 +26,6 @@ import org.w3c.dom.ls.LSSerializer;
 
 
 public class Utils {
-
 	/*
 	 * serialize Document
 	 */
@@ -128,7 +127,7 @@ public class Utils {
 		try {
 			fis = new FileInputStream(path);
 			content = IOUtils.toByteArray(fis);
-			byte header[] = String.format("blob %d\0", length).getBytes();
+			byte[] header = String.format("blob %d\0", length).getBytes();
 			byte[] toHash = new byte[header.length + content.length];
 			System.arraycopy(header ,0,toHash,			  0,header.length);
 			System.arraycopy(content,0,toHash,header.length,content.length);
@@ -151,7 +150,5 @@ public class Utils {
 		xstore.add(filePath, contentsToInsert,true);
 		System.out.println("finished processing "+filePath);
 	}
-	
-	
 
 }
