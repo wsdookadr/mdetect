@@ -18,8 +18,17 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/*
+ * This class serializes an ANTLR4 parse tree into an
+ * org.w3c.dom.Document using a stack to store the current path
+ * from the root element. 
+ * 
+ */
 
-
+/*
+ * TODO: add offset-based start/end for each node.
+ * 		 http://www.antlr.org/api/JavaTool/org/antlr/v4/runtime/ParserRuleContext.html
+ */
 
 public class ParseTreeDOMSerializer implements ParseTreeListener {
 	private Map<Integer, String> invTokenMap = null;
@@ -112,8 +121,6 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
     
     @Override
     public void visitTerminal(TerminalNode node) {
-    	//int nodeType = node.getSymbol().getType();
-    	//String nodeValue = "TERM_" + invTokenMap.get(nodeType);
     	String termValue = node.getText();
     	if(termValue != null) {
     		/*

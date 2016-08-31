@@ -39,19 +39,6 @@ public class Analyzer {
 	 * Note: The database should have a table like this
 	 * 		 commit, filePath, size, fileChecksum
 	 * 
-	 * Note: The sha1 that Git stores (which is accessible via git ls-files -s)
-	 * 		 is computed on (length, contents)
-	 * 		 http://stackoverflow.com/a/24283352/827519
-	 * 		 http://stackoverflow.com/a/7225329/827519
-	 * 
-	 * Note: Since this is PHP code, we have the source readily available.
-	 * 		 Compared to languages that compile to binaries [1] 
-	 * 		 (for example C or C++) where compilers might not produce the
-	 * 		 same binary for one build, the situation here is much 
-	 * 		 better, we can check the source.
-	 * 
-	 * 		 [1] https://reproducible-builds.org/docs/checksums/
-	 * 
 	 * Note: This does follow a bit the logic of debsums
 	 * 
 	 */

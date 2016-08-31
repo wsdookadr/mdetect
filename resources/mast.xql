@@ -61,6 +61,9 @@ declare function local:mast($node, $d) {
 (:~ get all documents, build
     their MAST, and store it back into the
     datastore
+
+    TODO: avoid computing MAST of already computed MASTs.
+          so only use the actual ASTs and nothing else.
   :)
 for $doc in db:list("xtrees")
 where matches($doc,"^.*\.php")
