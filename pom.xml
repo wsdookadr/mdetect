@@ -220,6 +220,11 @@
             <version>0.6</version>
         </dependency>
         <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.10</version>
+        </dependency>
+        <dependency>
             <artifactId>org.basex</artifactId>
             <groupId>basex</groupId>
             <scope>system</scope>
