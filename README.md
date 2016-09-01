@@ -24,7 +24,8 @@ Details
 =======
 
 In tests, building and storing the parse trees had a peak memory usage of 4G memory.
-Building MAST was found to take 4.3G memory.
+Building MAST was found to take a maximum of 4.3G.
+Parsing certain files has also been found to reach 4G memory usage.
 
 Contributing
 ============
