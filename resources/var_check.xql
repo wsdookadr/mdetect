@@ -1,9 +1,6 @@
 (:~ 
    
-   This will compute variable name entropy throughout source code.
-   If, the majority of variables have low entropy, then that would
-   come across as unusual (since they would only be used very
-   seldom).
+   We're computing variable name usage.
  
 :)
 
@@ -36,18 +33,18 @@ let $partial :=
     }
     (:? return json:serialize($elem, map { 'format': 'jsonml' }) :)
     return $elem
-for $doc in $partial
-  (:~
-    sum of variable occurences at document level
-    computation of probabilities of occurence for each variable name
-    TODO: refactor using copy/update or modify
-  :)
-  let $sum  := sum($doc//variable//@count//number())
-  return element {$doc/node-name()} {
-    attribute path {$doc/@path},
-    for $var in $doc//variable
-      let $prob    := round-half-to-even($var//@count//number() div $sum, 3)
-      return $var update insert node attribute prob {$prob} into .
-    }
-
+let $files:=
+    for $doc in $partial
+      (:~
+        sum of variable occurences at document level.
+        computation of probabilities of occurence for each variable name.
+      :)
+      let $sum     := sum($doc//variable//@count//number())
+      return element      {$doc/node-name()} {
+        attribute path    {$doc/@path},
+        for $var in $doc//variable
+          let $prob    := round-half-to-even($var//@count//number() div $sum, 3)
+          return $var update insert node attribute prob {$prob} into .
+        }
+return element root  {$files}
 

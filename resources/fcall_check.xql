@@ -45,12 +45,13 @@ let $partial :=
     (:? return json:serialize($elem, map { 'format': 'jsonml' }) :)
     return $elem
 }
-for $doc in $partial/node()
-  let $sum  := sum($doc//function//@count//number())
-  return element {$doc/node-name()} {
-    attribute path {$doc/@path},
-    for $func in $doc//function
-      let $prob    := round-half-to-even($func//@count//number() div $sum, 3)
-      return $func update insert node attribute prob {$prob} into .
-    }
-
+let $files := 
+    for $doc in $partial/node()
+      let $sum  := sum($doc//function//@count//number())
+      return element {$doc/node-name()} {
+        attribute path {$doc/@path},
+        for $func in $doc//function
+          let $prob    := round-half-to-even($func//@count//number() div $sum, 3)
+          return $func update insert node attribute prob {$prob} into .
+        }
+return element root  {$files}
