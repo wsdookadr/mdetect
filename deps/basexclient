@@ -14,7 +14,7 @@ CP="$(printf ":%s" "$BX/deps/"*.jar):$CLASSPATH"
 
 
 
-BASEX_JVM="-Xmx512m $BASEX_JVM"
+BASEX_JVM="-Xss6m -Xmx512m $BASEX_JVM"
 
 # Run code
 java -cp "$CP" $BASEX_JVM org.basex.BaseXClient "$@"
