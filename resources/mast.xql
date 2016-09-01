@@ -1,10 +1,10 @@
 (:~
 
-  This transformation will build a MAST(Merkelized abstract syntax tree)
+  This transformation will build a MAST(Merkleized abstract syntax tree)
   We'll use this later on in order to identify matching portions of
   logic in different programs.
   
-  This is a summary of the bottom-up construction of a merkle tree:
+  This is a summary of the bottom-up construction of a Merkle tree:
   start from leafs, assign the leafs a hash based on their node name.
   Then, progressively, for each higher level, take a node, concatenate
   its name with the previously computed hashes for all of its children,
@@ -58,12 +58,10 @@ declare function local:mast($node, $d) {
     default return ()
 };
 
-(:~ get all documents, build
-    their MAST, and store it back into the
-    datastore
+(:~ 
+    get all documents, build
+    their MAST, and store it back into the datastore
 
-    TODO: avoid computing MAST of already computed MASTs.
-          so only use the actual ASTs and nothing else.
   :)
 for $doc in db:list("xtrees")
 where matches($doc,"^unknown/.*\.php")
