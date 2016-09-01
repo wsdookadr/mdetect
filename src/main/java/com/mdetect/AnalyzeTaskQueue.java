@@ -15,11 +15,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 /*
- * TODO: an improvement would be to have the capcity of the queue
+ * TODO: an improvement would be to have the capacity of the queue
  * 		 measured in terms of the size of the files rather than the
  * 		 number of files being processed.
  * 		 the timeout should also be a function of the item sizes left
- * 	     in the queue.
+ * 	     in the queue (that are still processing).
  */
 
 public class AnalyzeTaskQueue {

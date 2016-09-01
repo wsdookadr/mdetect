@@ -6,7 +6,7 @@
 
 let $partial :=
     for $doc in db:list("xtrees")
-    where matches($doc,"^.*\.php$")
+    where matches($doc,"^unknown/.*\.php$")
     (:~ all variable nodes in the document :)
     let $anodes1 := db:open("xtrees",$doc)//variableInitializer//*[matches(text(),"^\$")]
     let $anodes2 := db:open("xtrees",$doc)//keyedVariable//*[matches(text(),"^\$")]

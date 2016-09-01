@@ -12,7 +12,7 @@ let $re_hex   := "((?:\\x[a-zA-Z0-9]{2})+)"
 let $re_q     := string-join(("['",'"]+'),'') (: single and double quotes :)
 let $partial  := (
     for $doc in db:list("xtrees")
-    where matches($doc,"^.*\.php$")
+    where matches($doc,"^unknown/.*\.php$")
     let $anodes := db:open("xtrees",$doc)//string
     for $s in $anodes
     group by $doc

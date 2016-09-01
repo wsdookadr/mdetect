@@ -66,7 +66,7 @@ declare function local:mast($node, $d) {
           so only use the actual ASTs and nothing else.
   :)
 for $doc in db:list("xtrees")
-where matches($doc,"^.*\.php")
+where matches($doc,"^unknown/.*\.php")
 let $tree := db:open("xtrees", $doc)
 let $mast_name := "/mast/" || $doc
 let $mast_tree := local:mast($tree/node(),1)

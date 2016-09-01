@@ -9,7 +9,7 @@
 let $partial := 
     element root {
     for $doc in db:list("xtrees")
-    where matches($doc,"^.*\.php$")
+    where matches($doc,"^unknown/.*\.php$")
     (:~ all function call nodes in the document :)
     let $anodes := db:open("xtrees",$doc)//functionCall//identifier
     (:~  variable function calls :)
