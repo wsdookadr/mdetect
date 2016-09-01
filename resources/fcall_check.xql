@@ -60,13 +60,18 @@ let $files :=
           return $func update insert node attribute prob {$prob} into .
         }
 
-(: filtering documents returned, based on specific function usage patterns :)
+(: aggregating data at file-level.
+   handle undefined values.
+  :)
 let $filtered :=
     for $doc in $files
     let $score_total := 0
     let $score_chr  := $doc//function[@name="chr"]//@prob//number()
+    let $score_chr  := if(fn:exists($score_chr)) then $score_chr else 0
     let $score_eval := $doc//function[@name="eval"]//@prob//number()
+    let $score_eval := if(fn:exists($score_eval)) then $score_eval else 0
     let $score_fvar := $doc/@fvarscore//number()
+    let $score_fvar := if(fn:exists($score_fvar)) then $score_fvar else 0
     return
      element file {
        attribute chr  {$score_chr},

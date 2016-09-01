@@ -33,6 +33,7 @@ let $partial :=
     }
     (:? return json:serialize($elem, map { 'format': 'jsonml' }) :)
     return $elem
+(: aggregate :)
 let $files:=
     for $doc in $partial
       (:~
