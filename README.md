@@ -51,6 +51,9 @@ The server should be started for this query to work (the server runner program i
 This will provide information function names and the number of calls, for each file
 that is stored in `BaseX`.
 
+You may run `java -jar ./deps/BaseX853.jar` which will bring up a GUI including an editor
+where you can run custom XQuery queries.
+
 Details
 =======
 
