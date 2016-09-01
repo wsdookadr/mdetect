@@ -14,12 +14,19 @@ import org.w3c.dom.Document;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
+/*
+ * TODO: an improvement would be to have the capcity of the queue
+ * 		 measured in terms of the size of the files rather than the
+ * 		 number of files being processed
+ * 
+ */
+
 public class AnalyzeTaskQueue {
     private final BlockingQueue<String> workQueue;
     private final ExecutorService service;
     private final XmlStore xstore;
     private String storePrefix;
-    private int HARD_TIMEOUT = 120;
+    private int HARD_TIMEOUT = 240;
     public final ConcurrentLinkedQueue<ParseTreeDTO> resultQueue;
     /*
      * The task queue uses a blocking work queue with a maximum size
