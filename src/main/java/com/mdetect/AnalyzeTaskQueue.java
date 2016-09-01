@@ -37,7 +37,6 @@ public class AnalyzeTaskQueue {
      * file to be parsed.
      */
     private int PER_TASK_BASE_TIME = 3;
-    
     public int queueCapacity = 50;
     public int numActiveParallelWorkers = 3;
     /*

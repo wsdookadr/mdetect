@@ -64,8 +64,9 @@ Parsing certain files has also been found to reach 4G memory usage.
 Contributing
 ============
 
-You're free to submit pull requests with improvements. Existing issues take 
-priority over new ones.
+This code is very much a work in progress. You're free to submit pull
+requests with improvements. Please review open issues before posting
+new ones.
 
 This code is released under the MIT license.
 
