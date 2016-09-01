@@ -26,9 +26,20 @@ public class AnalyzeTaskQueue {
     private final BlockingQueue<String> workQueue;
     private final ExecutorService service;
     private final XmlStore xstore;
-    private String storePrefix;
-    private int HARD_TIMEOUT = 240;
     public final ConcurrentLinkedQueue<ParseTreeDTO> resultQueue;
+    private String storePrefix;
+    private int AWAIT_TIMEOUT = 240;
+    private int QUEUE_EMPTY_TIMEOUT = 3 * 50;
+    /* 
+     * this will be a base timeout for
+     * the time allowed to use per-task.
+     * it will be scaled accordingly based on the size of the
+     * file to be parsed.
+     */
+    private int PER_TASK_BASE_TIME = 3;
+    
+    public int queueCapacity = 50;
+    public int numActiveParallelWorkers = 3;
     /*
      * The task queue uses a blocking work queue with a maximum size
      * (if the queue has reached maximum capacity, it will block
@@ -41,7 +52,7 @@ public class AnalyzeTaskQueue {
      * The analysis (parsing) is done in parallel, and the writing
      * to the datastore happens sequentially.
      */
-    public AnalyzeTaskQueue(int numActiveParallelWorkers, int queueCapacity, XmlStore xstore, String storePrefix) {
+    public AnalyzeTaskQueue(XmlStore xstore, String storePrefix) {
     	this.xstore = xstore;
     	this.storePrefix = storePrefix;
         workQueue = new LinkedBlockingQueue<String>(queueCapacity);
@@ -63,6 +74,10 @@ public class AnalyzeTaskQueue {
             Thread.currentThread().interrupt();
         }
     }
+    
+    public long unixNow() {
+    	return System.currentTimeMillis() / 1000L;
+    }
 
     /*
      * 
@@ -71,10 +86,14 @@ public class AnalyzeTaskQueue {
      */
     public void shutdown() {
     	/* wait for work queue to be emptied */
+    	long queueEmptyStart = unixNow();
     	while(!workQueue.isEmpty()) {
     		try {
     			System.out.println("[DBG] " + Integer.toString(workQueue.size()) + " items still in queue");
 				Thread.sleep(1000);
+				if(unixNow() - queueEmptyStart > QUEUE_EMPTY_TIMEOUT) {
+					break;
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -84,7 +103,7 @@ public class AnalyzeTaskQueue {
     	service.shutdown();
 
     	try {
-			boolean finishedDueToTimeout = service.awaitTermination(HARD_TIMEOUT, TimeUnit.SECONDS);
+			boolean finishedDueToTimeout = service.awaitTermination(AWAIT_TIMEOUT, TimeUnit.SECONDS);
 			if(finishedDueToTimeout) {
 				System.out.println("[DBG] timeout for remaining items");
 			}

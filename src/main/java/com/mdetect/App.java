@@ -122,9 +122,7 @@ public class App {
 			SqliteStore sq) {
 		/* parse and store parse trees in the xml store */
 		ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze(pathToAnalyze);
-		int analyzeQueueCapacity = 1000;
-		int analyzeWorkers = 3;
-		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(analyzeWorkers, analyzeQueueCapacity, xstore, "/unknown/");
+		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(xstore, "/unknown/");
 		for (int j = 0; j < toAnalyze.size(); j++) {
 			System.out.println("producing task " + toAnalyze.get(j));
 			tq.produce(toAnalyze.get(j));
