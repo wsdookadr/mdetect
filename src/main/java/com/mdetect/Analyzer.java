@@ -20,29 +20,7 @@ import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 
 public class Analyzer {
-	/*
-	 * This class contains minimal logic that does a set of
-	 * very specific sqlite operations.
-	 * 
-	 * In particular, it connects to a sqlite database, and then it
-	 * precomputes a series of characteristics of known codebases
-	 * and stores them in the sqlite database.
-	 * 
-	 * For example, the most common class/function/method/variable
-	 * names, file sizes and checksums.
-	 * 
-	 * Note: We only consider releases (so Git tags).
-	 * 
-	 * Note: Because Git has already computed hashes of 
-	 * 		 files, we will retrieve those and use them.
-	 * 
-	 * Note: The database should have a table like this
-	 * 		 commit, filePath, size, fileChecksum
-	 * 
-	 * Note: This does follow a bit the logic of debsums
-	 * 
-	 */
-
+	
 	public Analyzer() {
 		
 	}

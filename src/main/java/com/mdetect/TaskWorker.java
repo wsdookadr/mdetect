@@ -13,8 +13,6 @@ public class TaskWorker<I, O> implements Runnable {
         this.workerId = i;
     }
     
-    
-    
     /*
      * The workUnit is meant to be overriden by derived classes and 
      * does the computations required to process the work item.

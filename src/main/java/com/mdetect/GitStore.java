@@ -87,6 +87,7 @@ public class GitStore {
 		}
 		System.out.println(call.size());
 		Repository repository = git.getRepository();
+		/* add all tags */
 		for (Ref ref : call) {
 			try {
 				ObjectId tagObjId = ref.getObjectId();
@@ -99,6 +100,12 @@ public class GitStore {
 				e.printStackTrace();
 			}
         }
+		/* add HEAD commit as tag */
+		try {
+			ObjectId headCommit = repository.resolve(Constants.HEAD);
+			results.add(new GitTagDTO("HEAD",headCommit.getName())); 
+		} catch(Exception e) {
+		}
 		return results;
 	}
 

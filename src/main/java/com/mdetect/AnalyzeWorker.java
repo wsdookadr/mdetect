@@ -38,6 +38,7 @@ public class AnalyzeWorker extends TaskWorker<String, ParseTreeDTO> {
 		ParseTreeDTO result = null;
 		System.out.println("sha1=" + sha1 + " file="+filePath);
 		if(!sq.hasChecksum(sha1)) {
+			System.out.println("worker " + this.workerId + " started  task " + filePath);
 			Document processedDoc = d.processFile(filePath);
 			System.out.println("worker " + this.workerId + " finished task " + filePath);
 			result = new ParseTreeDTO(processedDoc, filePath, "");
