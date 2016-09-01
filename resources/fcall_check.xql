@@ -3,7 +3,7 @@
   This query runs metrics on the parse trees
   that were previously computed.
 
-  It works by iterating over all documents(parse trees)
+  Iterates over all documents(parse trees)
   in the database. Counts the function calls in each
   file and reports back a list of per-file counts.
 
@@ -42,9 +42,9 @@ let $partial :=
             }
       )
     }
-    (:? return json:serialize($elem, map { 'format': 'jsonml' }) :)
     return $elem
 }
+(: aggregate and compute probabilities of occurence for each function name :)
 let $files := 
     for $doc in $partial/node()
       let $sum  := sum($doc//function//@count//number())
@@ -54,4 +54,15 @@ let $files :=
           let $prob    := round-half-to-even($func//@count//number() div $sum, 3)
           return $func update insert node attribute prob {$prob} into .
         }
-return element root  {$files}
+(: filtering documents returned, based on specific function usage patterns :)
+let $filtered :=
+    for $doc in $files
+    return
+    if(
+      ($doc//function[@name="chr"]//@prob//number()  > 0.9) or
+      ($doc//function[@name="eval"]//@prob//number() > 0.9)
+     )
+     then element file {attribute path {$doc//@path}}
+     else ()
+return element root { $filtered }
+

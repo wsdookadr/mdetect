@@ -34,7 +34,7 @@ let $partial  := (
           let $phx  := 
               if($lwhx=0)
               then 0
-              else round-half-to-even(($lhx div number($lwq)) * 100, 3)
+              else round-half-to-even(($lhx div number($lwq)), 3)
           
           let $swb64 := replace($swq,$re_b64,'')   (: removed b64 :)
           let $lwb64 := string-length($swb64)      (: length without b64 :)
@@ -44,7 +44,7 @@ let $partial  := (
           let $pb64 := 
               if($lwq=0)
               then 0
-              else round-half-to-even(($lb64 div number($lwq)) * 100, 3)
+              else round-half-to-even(($lb64 div number($lwq)), 3)
               
           return
             element string {
