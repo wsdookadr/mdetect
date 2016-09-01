@@ -58,15 +58,18 @@ let $partial  := (
     return $elem
   )
 (: we now aggregate to find 
-   the percentage of base64 and hex literals
-   in each file :)
+   the percentage of base64 and hex literals in each file.
+   handle undefined values.
+   :)
 let $files :=
 for $doc in $partial
   let $total_length_strings  := sum($doc//string//@lwq//number())
   let $total_b64 := sum($doc//string//@lb64//number())
   let $total_hex := sum($doc//string//@lhex//number())
   let $phex      := round-half-to-even($total_hex div $total_length_strings, 3)
+  let $phex      := if(fn:exists($phex)) then $phex else 0
   let $pb64      := round-half-to-even($total_b64 div $total_length_strings, 3)
+  let $pb64      := if(fn:exists($phex)) then $pb64 else 0
   return element {$doc/node-name()} {
     attribute path {$doc/@path},
     attribute phex {$phex},
