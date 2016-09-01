@@ -2,6 +2,7 @@ package com.mdetect;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -25,7 +26,8 @@ public class ASTCheckRunner {
 		this.xstore = xstore;
 	}
 
-	public void check1() {
+	public List<String>checkFCalls() {
+		ArrayList<String> result = new ArrayList<String>();
 		try {
 			String query = Utils.getResource("/fcall_check.xql");
 			ArrayList<String> r = xstore.eval(query);
@@ -54,6 +56,7 @@ public class ASTCheckRunner {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return result;
 	}
 	
 	

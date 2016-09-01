@@ -59,13 +59,14 @@ let $files :=
           let $prob    := round-half-to-even($func//@count//number() div $sum, 3)
           return $func update insert node attribute prob {$prob} into .
         }
+
 (: filtering documents returned, based on specific function usage patterns :)
 let $filtered :=
     for $doc in $files
     let $score_total := 0
     let $score_chr  := $doc//function[@name="chr"]//@prob//number()
     let $score_eval := $doc//function[@name="eval"]//@prob//number()
-    let $score_fvar := $doc/file//@fvarscore//number()
+    let $score_fvar := $doc/@fvarscore//number()
     return
      element file {
        attribute chr  {$score_chr},

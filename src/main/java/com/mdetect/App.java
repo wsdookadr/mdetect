@@ -9,7 +9,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
+import org.w3c.dom.Document;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -142,8 +142,6 @@ public class App {
 		ASTCheckRunner cr = new ASTCheckRunner(xstore);
 		sq.createSchema();
 
-		
-		/*
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
 			analyzeCodeStructure(path,a,d,xstore,sq);	
@@ -151,10 +149,9 @@ public class App {
 			String path = cmdLineParams.get("checkPath");
 			acquireMetadata(path,a,d,xstore,sq);
 		}
-		*/
 		
 		xstore.stopServer();
-		cr.check1();
+		//cr.check1();
 		System.exit(0);
 	 }
 	 

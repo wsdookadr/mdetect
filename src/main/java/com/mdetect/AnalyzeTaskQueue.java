@@ -19,6 +19,7 @@ public class AnalyzeTaskQueue {
     private final ExecutorService service;
     private final XmlStore xstore;
     private String storePrefix;
+    private int HARD_TIMEOUT = 120;
     public final ConcurrentLinkedQueue<ParseTreeDTO> resultQueue;
     /*
      * The task queue uses a blocking work queue with a maximum size
@@ -71,15 +72,9 @@ public class AnalyzeTaskQueue {
     	}
     	System.out.println("shutdown..");
     	service.shutdown();
-    	/*
-    	 * TODO: improve logic by which workers notify
-    	 * of their available status, so we can ensure
-    	 * that we end execution and don't idle waiting
-    	 * for them without cause.
-    	 * 
-    	 */
+
     	try {
-			service.awaitTermination(5, TimeUnit.SECONDS);
+			service.awaitTermination(HARD_TIMEOUT, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
