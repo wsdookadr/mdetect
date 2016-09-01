@@ -27,9 +27,36 @@ In tests, building and storing the parse trees had a peak memory usage of 4G mem
 Building MAST was found to take a maximum of 4.3G.
 Parsing certain files has also been found to reach 4G memory usage.
 
+Usage
+=====
+
+
+This will generate checksums for `/home/user/php-codebases/` (these will be stored in
+`$HOME/.mdetect.db` ) . The files we compute checksums for are considered known
+files and will be skipped during detection.
+
+    ./mdetect -c /home/user/php-codebases/
+
+This will process the files in `/home/user/other-code/`, the files will be parsed
+and their parse trees will be stored in `BaseX`. These will be used in analysis.
+
+    ./mdetect -d /home/user/other-code/
+
+Currently, some checks are available in `resources/` in the form of `XQuery` programs.
+For example, you may run the following check for function call usage:
+
+    ./deps/basexclient -U admin -P admin -p 1984 ./resources/fcall_check.xql
+
+The server should be started for this query to work (the server runner program is in
+`./deps/basexserver`).
+This will provide information function names and the number of calls, for each file
+that is stored in `BaseX`.
+
 Contributing
 ============
 
-This code is released under the MIT license.
+You're free to submit pull requests with improvements. Existing issues take 
+priority over new ones.
 
+This code is released under the MIT license.
 
