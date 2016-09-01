@@ -27,6 +27,14 @@ In tests, building and storing the parse trees had a peak memory usage of 4G mem
 Building MAST was found to take a maximum of 4.3G.
 Parsing certain files has also been found to reach 4G memory usage.
 
+Install
+=======
+
+You need openjdk8 installed and maven. Running the following should pull all the
+dependencies and build mdetect:
+
+    mvn clean package
+
 Usage
 =====
 
