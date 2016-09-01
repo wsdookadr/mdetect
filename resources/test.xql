@@ -1,7 +1,6 @@
 
 (:~ 
-  search for base64_decode in the RHS of an assignment statement's strings
-  
+  search for base64_decode in the RHS of an assignment statement's strings  
   :)
 
 let $nodes := db:open("xtrees","unknown/home/user/work/mdetect/samples/sample.php")//assignmentOperator/following-sibling::*

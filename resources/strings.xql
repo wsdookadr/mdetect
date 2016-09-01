@@ -29,7 +29,6 @@ let $partial  := (
             then 1
             else 0
             
-            
     for $s in $anodes
     group by $doc
     let $instrb64 := sum($instrb64_seq)
@@ -76,7 +75,8 @@ let $partial  := (
     }
     return $elem
   )
-(: we now aggregate to find 
+(: 
+   we now aggregate to find 
    the percentage of base64 and hex literals in each file.
    handle undefined values.
    :)
