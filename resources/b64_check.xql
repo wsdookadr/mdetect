@@ -26,26 +26,26 @@ let $partial  := (
           (: $ss is an iterator over all the strings in document $doc :)
           let $ss := .
           let $stx  := string-join($ss//text(),'') (: collect text from the node and all its descendants :)
-          let $swq  := replace($stx,$re_q,"")     (: without quotes :)
+          let $swq  := replace($stx,$re_q,"")      (: without quotes :)
           let $lwq  := string-length($swq)
-          let $shx  := replace($swq,$re_hex,"")   (: remove hex literals :)
-          let $lwhx := string-length($shx) (: in chars, length of string without hex literals :)
-          (: how much of the string was a hex literal string:)
+          let $shx  := replace($swq,$re_hex,"")    (: remove hex literals :)
+          let $lwhx := string-length($shx)         (: in chars, length of string without hex literals :)
+          
+          (: how much of the string was a hex literal :)
           let $phx  := 
               if($lwhx=0)
               then 0
               else round-half-to-even(((($lwq - $lwhx)) div number($lwq)) * 100, 3)
-    
-          (: removed b64 :)
-          let $swb64 := replace($swq,$re_b64,'')
-          (: length without b64 :)
-          let $lwb64 := string-length($swb64)
-          (: length of b64 :)
-          let $lb64 := $lwq - $lwb64
+          
+          let $swb64 := replace($swq,$re_b64,'')   (: removed b64 :)
+          let $lwb64 := string-length($swb64)      (: length without b64 :)
+          let $lb64 := $lwq - $lwb64               (: length of b64 :)
+          (: how much of the string was base64:)
           let $pb64 := 
               if($lwq=0)
               then 0
               else round-half-to-even(($lb64 div number($lwq)) * 100, 3)
+              
           return
             element string {
               attribute hex {$phx} ,
