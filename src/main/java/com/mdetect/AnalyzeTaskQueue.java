@@ -70,14 +70,16 @@ public class AnalyzeTaskQueue {
      * 
      */
     public void shutdown() {
+    	/* wait for work queue to be emptied */
     	while(!workQueue.isEmpty()) {
     		try {
+    			System.out.println("[DBG] " + Integer.toString(workQueue.size()) + " items still in queue");
 				Thread.sleep(1000);
-				System.out.println("is service term ? " + service.isTerminated());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
     	}
+    	
     	System.out.println("shutdown..");
     	service.shutdown();
 

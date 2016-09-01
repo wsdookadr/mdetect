@@ -22,8 +22,18 @@ import org.w3c.dom.NodeList;
  */
 public class ASTCheckRunner {
 	private XmlStore xstore = null;
+	
+	String fcallQuery = null;
+	String varQuery = null;
+	String stringsQuery = null;
+	String mastQuery = null;
+	
 	public ASTCheckRunner(XmlStore xstore) {
 		this.xstore = xstore;
+		this.fcallQuery = Utils.getResource("/fcall_check.xql");
+		this.stringsQuery = Utils.getResource("/strings.xql");
+		this.varQuery = Utils.getResource("/var_check.xql");
+		this.mastQuery = Utils.getResource("/mast.xql");
 	}
 
 	public List<String>checkFCalls() {
