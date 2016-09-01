@@ -5,5 +5,5 @@ CP="$L2:target/classes/:$L1"
 export CLASSPATH="$CLASSPATH:$CP"
 # Raising the stack limit is necessary because of traversing
 # very nested parse tree structures ( the -Xss3m switch).
-java -Xss3m -Dfile.encoding=UTF-8 com.mdetect.App $@
+java -Xss6m -Dfile.encoding=UTF-8 com.mdetect.App $@
 
