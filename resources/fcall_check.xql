@@ -33,8 +33,8 @@ let $partial :=
       attribute fvarscore { $fvarscore },
       $func ! (
           (:~ 
-             retain implicit iterator of simple map operator in $x
-             in order to avoid ambiguity
+             retain implicit iterator in the $x variable for usage inside
+             this scope (to avoid ambiguity)
            :)
           let $x := .
           return
