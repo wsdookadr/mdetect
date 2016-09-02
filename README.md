@@ -19,6 +19,8 @@ The more specific use-cases are:
 - finding files that might be malicious according to certain rules
 - finding files that have the same structure as a given file
 
+See [this post](https://blog.garage-coding.com/2016/09/01/detecting-potentially-malicious-php-code-using-parsers-and-heuristics.html) for more details.
+
 Install
 =======
 
