@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -23,6 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 
 public class AnalyzeTaskQueue {
+	private static final Logger logger = LoggerFactory.getLogger(AnalyzeTaskQueue.class);
     private final BlockingQueue<String> workQueue;
     private final ExecutorService service;
     private final XmlStore xstore;
@@ -62,7 +65,7 @@ public class AnalyzeTaskQueue {
         for (int i=0; i < numActiveParallelWorkers; i++) {
         	service.submit(new AnalyzeWorker(workQueue, resultQueue,i));
         }
-        System.out.println("ctor");
+        logger.info("Starting analyze queue");
     }
 
     public void produce(String item) {
@@ -88,7 +91,7 @@ public class AnalyzeTaskQueue {
     	long queueEmptyStart = unixNow();
     	while(!workQueue.isEmpty()) {
     		try {
-    			System.out.println("[DBG] " + Integer.toString(workQueue.size()) + " items still in queue");
+    			logger.info("[DBG] " + Integer.toString(workQueue.size()) + " items still in queue");
 				Thread.sleep(1000);
 				if(unixNow() - queueEmptyStart > QUEUE_EMPTY_TIMEOUT) {
 					break;
@@ -104,12 +107,12 @@ public class AnalyzeTaskQueue {
     	try {
 			boolean finishedDueToTimeout = service.awaitTermination(AWAIT_TIMEOUT, TimeUnit.SECONDS);
 			if(finishedDueToTimeout) {
-				System.out.println("[DBG] timeout for remaining items");
+				logger.info("[DBG] timeout for remaining items");
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-    	System.out.println("[DBG] after worker shutdown");
+    	logger.info("[DBG] after worker shutdown");
     	
 		/*
 		 * store the results that were computed after all the work units were
