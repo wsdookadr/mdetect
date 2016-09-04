@@ -60,8 +60,6 @@ public class AnalyzeTaskQueue {
         workQueue = new LinkedBlockingQueue<String>(queueCapacity);
         resultQueue = new ConcurrentLinkedQueue<ParseTreeDTO>();
         service = Executors.newFixedThreadPool(numActiveParallelWorkers);
-        //service = Executors.newCachedThreadPool();
-        
         for (int i=0; i < numActiveParallelWorkers; i++) {
         	service.submit(new AnalyzeWorker(workQueue, resultQueue,i));
         }
@@ -101,7 +99,7 @@ public class AnalyzeTaskQueue {
 			}
     	}
     	
-    	System.out.println("shutdown..");
+    	logger.info("[DBG] shutdown");
     	service.shutdown();
 
     	try {
