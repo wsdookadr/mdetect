@@ -9,6 +9,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.BasicConfigurator;
 import org.w3c.dom.Document;
 
 import java.io.File;
@@ -132,6 +133,7 @@ public class App {
 	}
 
 	public static void main(String[] args) throws Exception {
+		BasicConfigurator.configure();
 		Map<String, String> cmdLineParams = parseCmdLineParams(args);
 		Analyzer a = new Analyzer();
 		Detector d = new Detector();

@@ -2,7 +2,6 @@ package com.mdetect;
 
 
 import org.basex.core.*;
-//import org.basex.api.client.ClientSession;
 import org.basex.core.cmd.*;
 import org.basex.io.out.ArrayOutput;
 import org.basex.io.serial.Serializer;
@@ -89,7 +88,6 @@ public class XmlStore {
 	public void add(String xmlKey, String xmlString, boolean replaceExisting) {
 		try {
 			session.execute("OPEN " + dbName);
-			//session.query("CHECK " + dbName + "; SET DTD false;");
 			InputStream is = new ByteArrayInputStream(xmlString.getBytes());
 			if (replaceExisting) {
 				session.execute("DELETE /" + xmlKey);
