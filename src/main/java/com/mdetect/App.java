@@ -65,7 +65,7 @@ public class App {
 		
 		if(line.hasOption("checksum") && line.hasOption("detect")) {
 			System.err.println("[ERROR] Both checksum and detect options were provided. Only one of them should be passed.");
-			formatter.printHelp("libreurl", options);
+			formatter.printHelp("mdetect", options);
 			System.exit(2);
 		} else if(line.hasOption("checksum")) {
 			cmdLineParams.put("checkPath", line.getOptionValue("checksum"));

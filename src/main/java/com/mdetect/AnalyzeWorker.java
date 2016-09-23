@@ -2,6 +2,8 @@ package com.mdetect;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 /*
@@ -11,6 +13,7 @@ import org.w3c.dom.Document;
  */
 public class AnalyzeWorker extends TaskWorker<String, ParseTreeDTO> {
 	public Detector d = null;
+	private static final Logger logger = LoggerFactory.getLogger(AnalyzeTaskQueue.class);
 	
 	/*
 	 * since this worker is run in its separate thread, there will be
@@ -36,14 +39,14 @@ public class AnalyzeWorker extends TaskWorker<String, ParseTreeDTO> {
 		d = new Detector();
 		String sha1 = Utils.gitHash(filePath);
 		ParseTreeDTO result = null;
-		System.out.println("sha1=" + sha1 + " file="+filePath);
+		logger.info("sha1=" + sha1 + " file="+filePath);
 		if(!sq.hasChecksum(sha1)) {
-			System.out.println("worker " + this.workerId + " started  task " + filePath);
+			logger.info("worker " + this.workerId + " started  task " + filePath);
 			Document processedDoc = d.processFile(filePath);
-			System.out.println("worker " + this.workerId + " finished task " + filePath);
+			logger.info("worker " + this.workerId + " finished task " + filePath);
 			result = new ParseTreeDTO(processedDoc, filePath, "");
 		} else {
-			System.out.println("[DBG] known file "+filePath);
+			logger.info("known file "+filePath);
 		}
 		return result;
 	}
