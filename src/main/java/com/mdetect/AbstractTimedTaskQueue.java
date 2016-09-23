@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -52,6 +53,7 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 
 	Integer queueCapacity = null;
 	Integer numConcurrentWorkers = null;
+	Semaphore cTasks = null;
 
 	Boolean stoppedProcessing = false;
 	Thread bgThreadProcess = null;
@@ -61,7 +63,8 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 	public AbstractTimedTaskQueue(Integer capacity) {
 		queueCapacity = capacity;
 		numConcurrentWorkers = capacity;
-
+		cTasks = new Semaphore(capacity);
+		
 		pool = Executors.newFixedThreadPool(numConcurrentWorkers);
 		workQueue = new LinkedBlockingQueue<W>(queueCapacity);
 		service = new ExecutorCompletionService<>(pool);
@@ -77,6 +80,7 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 
 	public void produce(W workUnit) {
 		try {
+			cTasks.acquire();
 			workQueue.put(workUnit);
 			System.out.println("generating " + workUnit);
 		} catch (InterruptedException e) {
@@ -201,6 +205,7 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 							}
 							iter.remove();
 							futures.notifyAll();
+							cTasks.release();
 						} else if (taskFuture.isDone()) {
 							/*
 							 * the task is done, so we remove it from
@@ -208,6 +213,7 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 							 */
 							iter.remove();
 							futures.notifyAll();
+							cTasks.release();
 						}
 					}
 				}
