@@ -10,6 +10,8 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.BasicConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import java.io.File;
@@ -32,6 +34,7 @@ public class App {
 	 * set of rules would mark some of them as being suspicious.
 	 * 
 	 */
+	private static final Logger logger = LoggerFactory.getLogger(App.class);
 	
 	@SuppressWarnings("deprecation")
 	private static Map<String, String> parseCmdLineParams(String[] args) {
@@ -64,7 +67,7 @@ public class App {
 		String detectPath = new String();
 		
 		if(line.hasOption("checksum") && line.hasOption("detect")) {
-			System.err.println("[ERROR] Both checksum and detect options were provided. Only one of them should be passed.");
+			logger.error("[ERROR] Both checksum and detect options were provided. Only one of them should be passed.");
 			formatter.printHelp("mdetect", options);
 			System.exit(2);
 		} else if(line.hasOption("checksum")) {
@@ -72,7 +75,7 @@ public class App {
 		} else if(line.hasOption("detect")) {
 			cmdLineParams.put("detectPath", line.getOptionValue("detect"));
 		} else {
-			System.err.println("[ERROR] No parameters were provided");
+			logger.error("[ERROR] No parameters were provided");
 			formatter.printHelp("libreurl", options);
 		}
 		return cmdLineParams;
@@ -108,7 +111,7 @@ public class App {
 					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
 					wq.produce(item);
 				}
-				System.out.println("tag="+tag.getTagName());
+				logger.info("tag="+tag.getTagName());
 				System.gc();
 			}
 			wq.shutdown();
@@ -123,13 +126,14 @@ public class App {
 			SqliteStore sq) {
 		/* parse and store parse trees in the xml store */
 		ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze(pathToAnalyze);
-		AnalyzeTaskQueue tq = new AnalyzeTaskQueue(xstore, "/unknown/");
+		AnalyzeTimedTaskQueue tq = new AnalyzeTimedTaskQueue(3, xstore, "/unknown/");
+		tq.process();
+		tq.gatherAndClean();
 		for (int j = 0; j < toAnalyze.size(); j++) {
-			System.out.println("producing task " + toAnalyze.get(j));
+			//System.out.println("producing task " + toAnalyze.get(j));
 			tq.produce(toAnalyze.get(j));
-			tq.storePartialResultsInXMLStore();
 		}
-		tq.shutdown();
+		tq.close();
 	}
 
 	public static void main(String[] args) throws Exception {

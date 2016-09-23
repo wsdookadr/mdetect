@@ -166,7 +166,7 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 	}
 
 	/*
-	 * this thread gradually checks the executor service for completed
+	 * this thread periodically checks the executor service for completed
 	 * tasks.
 	 * 
 	 * it also observes the tasks that have exceeded their expected
@@ -193,7 +193,7 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 							 * remove it from futures
 							 */
 							System.out.println(
-									"cancelled task due to timeout len=" + Integer.toString(futures.size()));
+									"cancelled task due to timeout; len=" + Integer.toString(futures.size()));
 							taskFuture.cancel(true);
 							try {
 								taskFuture.get();
@@ -227,9 +227,8 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 							} catch (Exception e) {
 
 							}
-							// completedTask.cancel(true);
 						} else {
-							System.out.println("didn't find any completed task");
+							System.out.println("didn't find any completed task yet");
 						}
 						cleanup();
 					}
