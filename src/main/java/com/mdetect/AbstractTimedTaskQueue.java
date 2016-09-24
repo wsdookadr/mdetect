@@ -37,9 +37,14 @@ import java.util.concurrent.TimeUnit;
 
 
 /*
- * Receives the work unit type and the task worker type as a parameter types
+ * Receives the
+ * - work unit type 
+ * - the task result type
+ * - the task worker type
+ * 
+ * as a parameter types
  */
-public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWorker<W>> {
+public abstract class AbstractTimedTaskQueue<W, O, TW extends AbstractTimedTaskWorker<W>> {
 	ExecutorCompletionService service = null;
 	ExecutorService pool = null;
 	BlockingQueue workQueue = null;
@@ -125,6 +130,7 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 	}
 
 	abstract TW createTaskWorker(W workUnit);
+	abstract void onTaskCompletion(O w);
 
 	/*
 	 * this method polls the work queue for new items and submits them for
@@ -227,7 +233,8 @@ public abstract class AbstractTimedTaskQueue<W, TW extends AbstractTimedTaskWork
 						if (completedTask != null) {
 							System.out.println("completed and result gathered");
 							try {
-								completedTask.get();
+								O taskResult = (O) completedTask.get();
+								onTaskCompletion(taskResult);
 							} catch (CancellationException e) {
 
 							} catch (Exception e) {

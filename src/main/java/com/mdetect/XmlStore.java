@@ -161,6 +161,7 @@ public class XmlStore {
 		    Prop.put(StaticOptions.RESTXQPATH, path + "/webapp");
 		    Prop.put(StaticOptions.REPOPATH, path + "/repo");
 		    Prop.put(StaticOptions.SERVERPORT, Integer.toString(serverPort));
+		    //Prop.put(StaticOptions.PARALLEL, Integer.toString(20));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

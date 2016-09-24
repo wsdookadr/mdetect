@@ -3,6 +3,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -28,10 +30,9 @@ public class AnalyzeTimedTaskWorker extends AbstractTimedTaskWorker<String> {
 	 * The constructor receives the work unit which is a file path,
 	 * and the xml store.
 	 */
-	public AnalyzeTimedTaskWorker(String workUnit, XmlStore xstore) {
+	public AnalyzeTimedTaskWorker(String workUnit) {
 		super(workUnit);
 		this.sq = new SqliteStore();
-		this.xstore = xstore;
 		this.d = new Detector();
 	}
 
@@ -43,19 +44,18 @@ public class AnalyzeTimedTaskWorker extends AbstractTimedTaskWorker<String> {
 	 * 
 	 */
 	@Override
-	public Integer call() {
+	public Pair<String, String> call() {
 		logger.info("[DBG]  started TaskWorker, workUnit=" + workUnit);
 		try {
 			String sha1 = Utils.gitHash(workUnit);
-			ParseTreeDTO result = null;
 			logger.info("[DBG] sha1=" + sha1 + " file="+workUnit);
 			if(!sq.hasChecksum(sha1)) {
-				Document processedDoc = d.processFile(workUnit);
-				result = new ParseTreeDTO(processedDoc, workUnit, "");
-				String contentsToInsert = "";
+				/* DOM of the AST */
+				Document parseDoc = d.processFile(workUnit);
+				ParseTreeDTO parseTree = new ParseTreeDTO(parseDoc, workUnit, "");
 				try {
-					contentsToInsert = Utils.serializeDOMDocument(result.getD());
-					xstore.add(storePrefix + result.getFilePath(), contentsToInsert, true);
+					String serializedAST = Utils.serializeDOMDocument(parseTree.getD());
+					return new ImmutablePair<String, String>(parseTree.getFilePath(), serializedAST);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -68,7 +68,7 @@ public class AnalyzeTimedTaskWorker extends AbstractTimedTaskWorker<String> {
 			e.printStackTrace();
 		}
 		logger.info("[DBG] finished TaskWorker, workUnit=" + workUnit);
-		return 0;
+		return null;
 	}
 
 }

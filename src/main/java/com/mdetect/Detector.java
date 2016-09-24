@@ -23,12 +23,15 @@ import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.Pair;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import javax.xml.transform.stream.StreamSource;
@@ -37,7 +40,42 @@ import com.mdetect.*;
 import com.mdetect.PHPParser.HtmlDocumentContext;
 
 
+/*
+ * Ideally, the code in parsePHP should be in such a way
+ * that it checks for thread interruptions.
+ * 
+ * We want to allow the thread that will run this code
+ * to be interrupted.
+ * 
+ * 
+ */
+
 public class Detector {
+	private static final Logger logger = LoggerFactory.getLogger(Detector.class);
+	
+    public class InterruptablePHPParser extends PHPParser {
+    	
+    	private String filePath;
+    	
+    	public InterruptablePHPParser(CommonTokenStream tokens, String filePath) {
+    		super(tokens);
+    		this.filePath = filePath;
+    	}
+    	/*
+    	 * Overriding the enterRule method in order to allow thread-interruption
+    	 */
+		@Override
+		public void enterRule(ParserRuleContext ctx, int i, int j) {
+			super.enterRule(ctx, i, j);
+			if(Thread.currentThread().isInterrupted()) {
+				logger.info("[DBG] thread interrupted while parsing " + filePath);
+				Thread.yield();
+				String exceptionMessage = "thread interrupted " + filePath;
+				throw new ParseCancellationException(exceptionMessage);
+			}
+		}	
+    }
+	
 	/*
 	 * Returns a Parser object (that contains the AST)
 	 */
@@ -51,7 +89,7 @@ public class Detector {
 		}
         PHPLexer lexer = new PHPLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        PHPParser parser = new PHPParser(tokens);
+        PHPParser parser = new InterruptablePHPParser(tokens, filePath);
         /* turn on prediction mode to speed up parsing */
         parser.getInterpreter().setPredictionMode(PredictionMode.SLL);
         Pair<Parser, Lexer> retval = new Pair<Parser, Lexer>(parser, lexer);
@@ -69,6 +107,7 @@ public class Detector {
     	};
     	return invMap;
     }
+    
 
     public Document processFile(String filePath) {
     	Pair<Parser, Lexer> pl = parsePHP(filePath);

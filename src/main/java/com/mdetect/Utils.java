@@ -132,13 +132,13 @@ public class Utils {
 
 	public static void processAndStore(String filePath, Detector d, XmlStore xstore) {
 		Document w = d.processFile(filePath); 
-		String contentsToInsert = "";
+		String serializedAST = "";
 		try {
-			contentsToInsert = Utils.serializeDOMDocument(w);
+			serializedAST = Utils.serializeDOMDocument(w);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		xstore.add(filePath, contentsToInsert,true);
+		xstore.add(filePath, serializedAST,true);
 		System.out.println("finished processing "+filePath);
 	}
 
