@@ -134,6 +134,7 @@ public class App {
 			tq.produce(toAnalyze.get(j));
 		}
 		tq.close();
+		tq.printPerfReport();
 	}
 
 	public static void main(String[] args) throws Exception {

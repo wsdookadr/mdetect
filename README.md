@@ -52,8 +52,8 @@ The server should be started for this query to work (the server runner program i
 This will provide information about function names and the number of calls, for each file
 that is stored in `BaseX`.
 
-You may run `java -jar ./deps/BaseX853.jar` which will bring up a GUI including an editor
-where you can run custom XQuery queries.
+You may run `./deps/basexgui` which will bring up a GUI including an
+editor where you can run custom XQuery queries.
 
 Details
 =======
@@ -61,6 +61,18 @@ Details
 In tests, building and storing the parse trees had a peak memory usage of 4G memory.
 Building MAST was found to take a maximum of 4.3G.
 Parsing certain files has also been found to reach 4G memory usage.
+
+During tests, the ~/BaseXData/ directory (where BaseX stores its databases) was found to be
+10 times larger than the size of the PHP code parsed.
+
+Some performance metrics after parsing and storing parse trees for the entire Joomla 3.6.2 codebase :
+
+| name                   | value          |
+| ---------------------- | -------------- |
+| processing speed       | 136.71875 kb/s |
+| peak memory usage      | 2520 MB        |
+| time spent             | 110 seconds    |
+| processed data size    | 14 MB          |
 
 Contributing
 ============
