@@ -4,30 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
-import org.eclipse.jgit.api.errors.CheckoutConflictException;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRefNameException;
-import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.dircache.DirCache;
-import org.eclipse.jgit.dircache.DirCacheEntry;
 import org.eclipse.jgit.dircache.DirCacheIterator;
 import org.eclipse.jgit.dircache.DirCacheTree;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevTree;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 /*
@@ -49,13 +35,7 @@ public class GitStore {
 			e.printStackTrace();
 		}
 	}
-	/*
-	 * Add shutdown hander for SIGINT, and reset --hard HEAD
-	 * repositories before starting.
-	 * http://stackoverflow.com/a/2541950/827519
-	 * http://stackoverflow.com/a/1216188/827519
-	 */
-	
+
 	public void reset() {
 		/* delete lock file if one is present */
 		File f = new File(gitRepoPath + "/.git/index.lock");
@@ -110,13 +90,12 @@ public class GitStore {
 	}
 
 	/*
-	 * Receives commit as a string. Checks out that specific commit
+	 * Receives commit hash as a string. Checks out that specific commit
 	 * and gets information about files and their object ids (sha1)
 	 * at that commit.
-	 * 
 	 */
-	public LinkedBlockingQueue<GitFileDTO> listHashes(String sCommit) {
-		LinkedBlockingQueue<GitFileDTO> results = new LinkedBlockingQueue<GitFileDTO>();
+	public ArrayList<GitFileDTO> listHashes(String sCommit) {
+		ArrayList<GitFileDTO> results = new ArrayList<GitFileDTO>();
 		ObjectId oCommit = null;
 		Repository rep = git.getRepository();
 		// get commit (or HEAD if it's not specified)
@@ -160,7 +139,7 @@ public class GitStore {
 				    	 */
 				    	pathString = gitRepoPath + "/" + pathString;
 				    	GitFileDTO fo = new GitFileDTO(fileSize,pathString,sha1);
-				    	results.put(fo);
+				    	results.add(fo);
 				    }
 				}
 			}

@@ -137,7 +137,6 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
 			if (debugMode) {
 				System.out.println("enter/exit term");
 			}
-			
 			newNode.appendChild(domDoc.createTextNode(termValue));
     		nodeStack.peek().appendChild(newNode);
     		/* 

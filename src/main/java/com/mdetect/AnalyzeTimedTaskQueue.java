@@ -1,20 +1,11 @@
 package com.mdetect;
 
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AnalyzeTimedTaskQueue
 		extends AbstractTimedTaskQueue<String, Pair<String, String>, AnalyzeTimedTaskWorker> {

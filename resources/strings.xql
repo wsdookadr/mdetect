@@ -3,6 +3,9 @@
   We're looking for base64 strings or for hexliterals
   
   reference for the b64 regex: http://stackoverflow.com/a/8571649/827519
+  reference for gzinflate detection:
+    - https://tools.ietf.org/html/rfc1950#page-4
+    - http://stackoverflow.com/a/29268776/827519
 :)
 
 (: threshold as percentage of the string :)

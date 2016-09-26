@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
  * 
  */
 public class AnalyzeTimedTaskWorker extends AbstractTimedTaskWorker<String> {
-	public Detector d = null;
+	public ParseUtils d = null;
     private XmlStore xstore = null;
 	private static final Logger logger = LoggerFactory.getLogger(AnalyzeTimedTaskWorker.class);
 	
@@ -33,7 +33,7 @@ public class AnalyzeTimedTaskWorker extends AbstractTimedTaskWorker<String> {
 	public AnalyzeTimedTaskWorker(String workUnit) {
 		super(workUnit);
 		this.sq = new SqliteStore();
-		this.d = new Detector();
+		this.d = new ParseUtils();
 	}
 
 	/*

@@ -1,5 +1,9 @@
 package com.mdetect;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -7,22 +11,10 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 public class App {
@@ -83,54 +75,45 @@ public class App {
 	
 	 public static void acquireMetadata(
 			 String knownFilesPath,
-			 Analyzer a,
-			 Detector d,
 			 XmlStore xstore,
 			 SqliteStore sq) {
 		/* 
 		 * retrieve checksums and metadata for a set of files
 		 * and store their checksums and metadata in the sqlite
 		 * data store.
-		 * 
 		 * duplicates on (path,sha1) will be excluded.
+		 * 
+		 * writing to the database will be made in chunks.
 		 */
-		List<String> gRepoPaths = a.findGitRepos(knownFilesPath);
-		for (String gRepo : gRepoPaths) {
-			WriteQueue wq = new WriteQueue(xstore, sq);
-			GitStore g = new GitStore(gRepo);
-			List<GitTagDTO> gitTags = g.getAllTags();
-			HashSet<String> dupeSet = new HashSet<String>();
-			g.reset();
-			for(GitTagDTO tag : gitTags) {
-				LinkedBlockingQueue<GitFileDTO> gitFiles = g.listHashes(tag.getTagCommit());
-				for(GitFileDTO f : gitFiles) {
-					String dupeKey = f.getPath() + f.getSha1();
-					if(dupeSet.contains(dupeKey))
-						continue;
-					dupeSet.add(dupeKey);
-					Pair<GitFileDTO, String> item = new ImmutablePair<GitFileDTO, String>(f, tag.getTagName());
-					wq.produce(item);
-				}
-				logger.info("tag="+tag.getTagName());
-				System.gc();
+		GitFileIterator gi = new GitFileIterator(knownFilesPath);
+		int added = 0;
+		while(gi.hasNext()) {
+			Pair<GitFileDTO, String> p = gi.next();
+			if(!p.getLeft().getPath().endsWith(".php"))
+				continue;
+			logger.info(p.getLeft().getPath());
+			sq.addChecksum(p.getLeft(), p.getRight());
+			added += 1;
+			if (added == 500) {
+				sq.commit();
+				added = 0;
 			}
-			wq.shutdown();
 		}
-	 }
+		if (added > 0) {
+			sq.commit();
+		}
+	}
 
 	public static void analyzeCodeStructure(
 			String pathToAnalyze,
-			Analyzer a,
-			Detector d,
 			XmlStore xstore,
 			SqliteStore sq) {
 		/* parse and store parse trees in the xml store */
-		ArrayList<String> toAnalyze = (ArrayList<String>) a.findFilesToAnalyze(pathToAnalyze);
+		ArrayList<String> toAnalyze = (ArrayList<String>) FileScanUtils.findFilesToAnalyze(pathToAnalyze);
 		AnalyzeTimedTaskQueue tq = new AnalyzeTimedTaskQueue(3, xstore, "/unknown/");
 		tq.process();
 		tq.gatherAndClean();
 		for (int j = 0; j < toAnalyze.size(); j++) {
-			//System.out.println("producing task " + toAnalyze.get(j));
 			tq.produce(toAnalyze.get(j));
 		}
 		tq.close();
@@ -140,8 +123,6 @@ public class App {
 	public static void main(String[] args) throws Exception {
 		BasicConfigurator.configure();
 		Map<String, String> cmdLineParams = parseCmdLineParams(args);
-		Analyzer a = new Analyzer();
-		Detector d = new Detector();
 		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
 		ASTCheckRunner cr = new ASTCheckRunner(xstore);
@@ -149,12 +130,12 @@ public class App {
 
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
-			analyzeCodeStructure(path,a,d,xstore,sq);	
+			analyzeCodeStructure(path,xstore,sq);	
 		}else if(cmdLineParams.containsKey("checkPath")) {
 			String path = cmdLineParams.get("checkPath");
-			acquireMetadata(path,a,d,xstore,sq);
+			acquireMetadata(path,xstore,sq);
 		}
-		
+
 		xstore.stopServer();
 		//cr.check1();
 		System.exit(0);

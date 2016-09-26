@@ -2,7 +2,6 @@ package com.mdetect;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,7 +10,6 @@ import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -23,8 +21,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 
 
@@ -81,7 +77,9 @@ public class Utils {
 			root.appendChild(document.createTextNode(" "));
 			root.appendChild(document.createTextNode("text"));
 		} catch (Exception pce) {
-			// Parser with specified options can't be built
+			/*
+			 * Parser with specified options can't be built
+			 */
 			pce.printStackTrace();
 			System.exit(-1);
 		}
@@ -107,7 +105,8 @@ public class Utils {
 	 * 
 	 * 		blob <length>\0content
 	 * 
-	 * reference https://git-scm.com/book/en/v2/Git-Internals-Git-Objects#Object-Storage
+	 * reference:
+	 * 	https://git-scm.com/book/en/v2/Git-Internals-Git-Objects#Object-Storage
 	 */
 	public static String gitHash(String path) {
 		File file = new File(path);
@@ -130,7 +129,7 @@ public class Utils {
 		return sha1;
 	}
 
-	public static void processAndStore(String filePath, Detector d, XmlStore xstore) {
+	public static void processAndStore(String filePath, ParseUtils d, XmlStore xstore) {
 		Document w = d.processFile(filePath); 
 		String serializedAST = "";
 		try {

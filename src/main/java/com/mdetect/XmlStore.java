@@ -1,24 +1,23 @@
 package com.mdetect;
 
 
-import org.basex.core.*;
-import org.basex.core.cmd.*;
-import org.basex.io.out.ArrayOutput;
-import org.basex.io.serial.Serializer;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import org.basex.BaseXServer;
+import org.basex.api.client.ClientSession;
+import org.basex.core.Context;
+import org.basex.core.StaticOptions;
+import org.basex.core.cmd.CreateDB;
+import org.basex.core.cmd.XQuery;
 import org.basex.query.QueryException;
 import org.basex.query.QueryProcessor;
 import org.basex.query.iter.Iter;
-import org.basex.query.value.Value;
 import org.basex.query.value.item.Item;
 import org.basex.util.Prop;
-import org.basex.core.parse.Commands.CmdIndex;
 import org.basex.util.list.StringList;
-import org.apache.commons.io.IOUtils;
-import org.basex.BaseXServer;
-import org.basex.api.client.ClientQuery;
-import org.basex.api.client.ClientSession;
-import java.io.*;
-import java.util.ArrayList;
 
 public class XmlStore {
 	public String dbName = "xtrees";

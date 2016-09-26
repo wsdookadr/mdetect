@@ -1,27 +1,20 @@
 package com.mdetect;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 
-public class Analyzer {
+public class FileScanUtils {
 	
-	public Analyzer() {
+	public FileScanUtils() {
 		
 	}
 	
@@ -34,7 +27,7 @@ public class Analyzer {
 	 * 		 is done when enumerating the results to filter
 	 * 		 only the .git directories. 
 	 */
-	List<String> findGitRepos(String dirPath) {
+	public static List<String> findGitRepos(String dirPath) {
 		File dir = new File(dirPath);
 		IOFileFilter gitDirFilter = (IOFileFilter) FileFilterUtils.suffixFileFilter(".git");
 		IOFileFilter notFile = FileFilterUtils.notFileFilter(TrueFileFilter.INSTANCE);
@@ -61,7 +54,7 @@ public class Analyzer {
 	/*
 	 * Acquire file hashes, sizes and paths from Git repositories.
 	 */
-	List<String> findFilesToAnalyze(String dirPath) {
+	public static List<String> findFilesToAnalyze(String dirPath) {
 		IOFileFilter gitFilter = FileFilterUtils.notFileFilter(
 						FileFilterUtils.nameFileFilter(".git")
 				);

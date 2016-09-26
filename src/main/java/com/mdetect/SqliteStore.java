@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 
 public class SqliteStore {
@@ -14,7 +13,7 @@ public class SqliteStore {
 	
 	public String queryInsert = null;
 	public String querySchema = null;
-	
+
 	public String dbSchema = "";
 	public SqliteStore() {
 		querySchema = Utils.getResource("/create_schema.sql");
@@ -28,7 +27,7 @@ public class SqliteStore {
           System.exit(-1);
         }
     }
-	
+
 	public void createSchema() {
 		
 		try {
@@ -38,7 +37,7 @@ public class SqliteStore {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/*
 	 * Adds file metadata (including a checksum) to the sqlite database.
 	 */
@@ -70,7 +69,7 @@ public class SqliteStore {
 			return false;
 		}
 	}
-	
+
 	public PreparedStatement prepare(String query) {
 		try {
 			return connection.prepareStatement(query);
@@ -79,7 +78,7 @@ public class SqliteStore {
 		}
 		return null;
 	}
-	
+
 	public void commit() {
 		try {
 			connection.commit();
