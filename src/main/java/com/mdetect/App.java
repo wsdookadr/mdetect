@@ -30,7 +30,6 @@ public class App {
 	
 	@SuppressWarnings("deprecation")
 	private static Map<String, String> parseCmdLineParams(String[] args) {
-		HashMap<String, String> cmdLineParams = new HashMap<String, String>();
 		CommandLineParser parser = new PosixParser();
 		Options options = new Options();
 		options.addOption(
@@ -47,6 +46,13 @@ public class App {
 				.withDescription("path to PHP code to be analyzed")
 				.create('d')
 				);
+		options.addOption(
+				OptionBuilder
+				.withLongOpt("report")
+				.hasArg(false)
+				.withDescription("report potentially malicious files")
+				.create('r')
+				);
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine line = null;
 		try {
@@ -57,7 +63,7 @@ public class App {
 		}
 		String checkPath = new String();
 		String detectPath = new String();
-		
+		HashMap<String, String> cmdLineParams = new HashMap<String, String>();
 		if(line.hasOption("checksum") && line.hasOption("detect")) {
 			logger.error("[ERROR] Both checksum and detect options were provided. Only one of them should be passed.");
 			formatter.printHelp("mdetect", options);
@@ -66,6 +72,8 @@ public class App {
 			cmdLineParams.put("checkPath", line.getOptionValue("checksum"));
 		} else if(line.hasOption("detect")) {
 			cmdLineParams.put("detectPath", line.getOptionValue("detect"));
+		} else if(line.hasOption("report")) {
+			cmdLineParams.put("report", "1");
 		} else {
 			logger.error("[ERROR] No parameters were provided");
 			formatter.printHelp("libreurl", options);
@@ -73,7 +81,7 @@ public class App {
 		return cmdLineParams;
 	}
 	
-	 public static void acquireMetadata(
+	 public static void acquireChecksums(
 			 String knownFilesPath,
 			 XmlStore xstore,
 			 SqliteStore sq) {
@@ -119,25 +127,30 @@ public class App {
 		tq.close();
 		tq.printPerfReport();
 	}
+	
+	public static void report(XmlStore xstore) {
+		ASTCheckRunner cr = new ASTCheckRunner(xstore);
+		//cr.check1();
+	}
 
 	public static void main(String[] args) throws Exception {
 		BasicConfigurator.configure();
 		Map<String, String> cmdLineParams = parseCmdLineParams(args);
 		SqliteStore sq = new SqliteStore();
 		XmlStore xstore = new XmlStore();
-		ASTCheckRunner cr = new ASTCheckRunner(xstore);
 		sq.createSchema();
 
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
 			analyzeCodeStructure(path,xstore,sq);	
-		}else if(cmdLineParams.containsKey("checkPath")) {
+		} else if(cmdLineParams.containsKey("checkPath")) {
 			String path = cmdLineParams.get("checkPath");
-			acquireMetadata(path,xstore,sq);
+			acquireChecksums(path,xstore,sq);
+		} else if(cmdLineParams.containsKey("report")) {
+			report(xstore);
 		}
-
+		
 		xstore.stopServer();
-		//cr.check1();
 		System.exit(0);
 	 }
 	 
