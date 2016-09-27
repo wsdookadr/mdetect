@@ -26,6 +26,16 @@ Install
 You need openjdk8 installed and maven. Running the following should pull all the
 dependencies and build mdetect:
 
+For CentOS install jdk and maven, then build the project:
+
+    yum install maven30.x86_64
+    yum install java-1.8.0-openjdk.x86_64
+    mvn clean package
+
+For Ubuntu:
+
+    apt-get install openjdk-8-jdk
+    apt-get install maven
     mvn clean package
 
 Usage
