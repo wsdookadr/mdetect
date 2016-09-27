@@ -66,14 +66,16 @@ editor where you can run custom XQuery queries.
 Details
 =======
 
-In tests, building and storing the parse trees had a peak memory usage of 4G memory.
-Building MAST was found to take a maximum of 4.3G.
-Parsing certain files has also been found to reach 4G memory usage.
+Checksums will be stored in `~/.mdetect.db` which is an sqlite flat-file
+database.  The parse trees will be stored in the `xtrees` BaseX database
+located at `~/BaseXData` (the default location for all BaseX databases).
 
-During tests, the ~/BaseXData/ directory (where BaseX stores its databases) was found to be
-10 times larger than the size of the PHP code parsed.
+During tests, the `~/BaseXData/` directory (where BaseX stores its
+databases) was found to be 10 times larger than the size of the PHP
+code parsed.
 
-Some performance metrics after parsing and storing parse trees for the entire Joomla 3.6.2 codebase :
+Some performance metrics after parsing and storing parse trees for the
+entire Joomla 3.6.2 codebase :
 
 | name                   | value          |
 | ---------------------- | -------------- |
@@ -81,6 +83,9 @@ Some performance metrics after parsing and storing parse trees for the entire Jo
 | peak memory usage      | 2520 MB        |
 | time spent             | 110 seconds    |
 | processed data size    | 14 MB          |
+
+Additional note: Parsing certain large PHP files (1MB in size) was found
+to cause a memory usage of 4GB.
 
 Contributing
 ============
