@@ -52,6 +52,14 @@ The server should be started for this query to work (the server runner program i
 This will provide information about function names and the number of calls, for each file
 that is stored in `BaseX`.
 
+To get a report of the potentially malicious files run:
+
+    ./mdetect -r
+
+(this will act on files analyzed when `-d` was run;
+ no files with known checksums will be checked, that is,
+ the checksums collected when `-c` was run)
+
 You may run `./deps/basexgui` which will bring up a GUI including an
 editor where you can run custom XQuery queries.
 
