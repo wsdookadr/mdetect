@@ -1,82 +1,35 @@
 (:~
-
   Iterates over all documents(parse trees)
   in the database. Counts the function calls in each
   file.
-
 :)
-
 let $partial := 
     element root {
-    for $doc in db:list("xtrees")
-    where matches($doc,"^unknown/.*\.php$")
-    (:~ all function call nodes in the document :)
-    let $anodes := db:open("xtrees",$doc)//functionCall//identifier
-    (:~  variable function calls :)
-    let $fvar   := db:open("xtrees",$doc)//functionCall//functionCallName//chainBase//keyedVariable
-    (:~ names of the function calls :)
-    let $tnodes := $anodes//text()
-    (:~ distinct values thereof :)
-    let $dnodes := distinct-values($tnodes)
-    for $func in $dnodes
-    let $cnt := count($anodes//[text()=$func])
-    group by $doc
-    
-    (: variable syntax function call score :)
-    let $fvarscore := 
-      if(count($anodes) = 0)
-      then 0
-      else (count($fvar) div count($anodes))
-      
-    let $elem := element file {
-      attribute path { $doc },
-      attribute fvarscore { $fvarscore },
-      $func ! (
-          (:~ 
-             retain implicit iterator in the $x variable for usage inside
-             this scope (to avoid ambiguity)
-           :)
-          let $x := .
-          return
-            element function {
-              attribute name  { $x } ,
-              attribute count {
-                count(filter($anodes//[text()=$x], function($y) {$y = true()} )) 
-              }
-            }
-      )
-    }
-    return $elem
-}
-(: aggregate and compute probabilities of occurence for each function name :)
-let $files := 
-    for $doc in $partial/node()
-      let $sum  := sum($doc//function//@count//number())
-      return element {$doc/node-name()} {
-        attribute path {$doc/@path},
-        attribute fvarscore {$doc/@fvarscore},
-        for $func in $doc//function
-          let $prob    := round-half-to-even($func//@count//number() div $sum, 3)
-          return $func update insert node attribute prob {$prob} into .
+    for $dbkey in db:list("xtrees")  (: [position() = (40 to 50)] :)
+    where matches($dbkey,"^unknown/.*\.php$")
+    group by $dbkey
+    let $root := db:open("xtrees",$dbkey)
+    (: all functionCall nodes :)
+    let $all_fcalls := $root//functionCall
+    return element file {
+        attribute path  { $dbkey } ,
+        attribute total { count($all_fcalls)},
+        (:~ regular function calls :)
+        let $anodes := $all_fcalls//identifier//text()
+        (:~ variable function calls :)
+        let $fvar   := $all_fcalls//functionCallName//chainBase//keyedVariable//text()
+        (:~ union of the two :)
+        let $all    := ($anodes | $fvar)
+        for $func in distinct-values($all)
+        let $cnt := count($all[.=$func])
+        where $cnt > 0
+        order by $func descending
+        group by $func
+        return element func {
+          attribute cnt {$cnt},
+          $func
         }
+    }
+}
+return $partial
 
-(: aggregating data at file-level.
-   handle undefined values.
-  :)
-let $filtered :=
-    for $doc in $files
-    let $score_total := 0
-    let $score_chr  := $doc//function[@name="chr"]//@prob//number()
-    let $score_chr  := if(fn:exists($score_chr)) then $score_chr else 0
-    let $score_eval := $doc//function[@name="eval"]//@prob//number()
-    let $score_eval := if(fn:exists($score_eval)) then $score_eval else 0
-    let $score_fvar := $doc/@fvarscore//number()
-    let $score_fvar := if(fn:exists($score_fvar)) then $score_fvar else 0
-    return
-     element file {
-       attribute chr  {$score_chr},
-       attribute eval {$score_eval},
-       attribute fvar {$score_fvar},
-       attribute path {$doc//@path}
-     }
-return element root { $filtered }
