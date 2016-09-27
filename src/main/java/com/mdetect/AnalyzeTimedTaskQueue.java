@@ -45,14 +45,14 @@ public class AnalyzeTimedTaskQueue
 		if (kb < 5) {
 			return new Long(1400);
 		} else if (kb < 10) {
-			return new Long(2000);
+			return new Long(6000);
 		} else if (kb < 100) {
-			return new Long(5000);
+			return new Long(10000);
 		} else if (kb < 200) {
-			return new Long(8000);
+			return new Long(430000);
 		}
 
-		return new Long(10000);
+		return new Long(500000);
 	}
 
 	public void onTaskCompletion(Pair<String, String> w) {
