@@ -1,5 +1,6 @@
 package com.mdetect;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.BasicConfigurator;
+import org.basex.query.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,8 +131,14 @@ public class App {
 	}
 	
 	public static void report(XmlStore xstore) {
-		ASTCheckRunner cr = new ASTCheckRunner(xstore);
-		//cr.check1();
+		try {
+			xstore.stopServer();
+			System.out.println(xstore.eval(Utils.getResource("/report.xql")));
+		} catch (QueryException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -142,18 +150,18 @@ public class App {
 
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
-			analyzeCodeStructure(path,xstore,sq);	
+			analyzeCodeStructure(path,xstore,sq);
+			xstore.stopServer();
 		} else if(cmdLineParams.containsKey("checkPath")) {
 			String path = cmdLineParams.get("checkPath");
 			acquireChecksums(path,xstore,sq);
+			xstore.stopServer();
 		} else if(cmdLineParams.containsKey("report")) {
 			report(xstore);
 		}
 		
-		xstore.stopServer();
 		System.exit(0);
 	 }
-	 
 }
 
 

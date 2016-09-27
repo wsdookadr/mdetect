@@ -97,6 +97,7 @@ public class XmlStore {
 		}
 	}
 	
+	/*
 	public void addChecksumDoc() {
 		executeStoredQuery("/create_doc.xql","/xtrees/checksums.xml","xtrees","checksums.xml");
 	}
@@ -104,6 +105,7 @@ public class XmlStore {
 	public void addChecksum(GitFileDTO f, String gTag){
 		executeStoredQuery("/add_checksum.xql",f.getPath(), gTag, f.getSha1(), Integer.toString(f.getFileSize()));
 	}
+	*/
 	
 	public void executeStoredQuery(String q, String ...args) {
 		/* 
@@ -181,6 +183,6 @@ public class XmlStore {
 		makeSession();
 		createDB();
 		createIndexes();
-		addChecksumDoc();
+		//addChecksumDoc();
 	}
 }

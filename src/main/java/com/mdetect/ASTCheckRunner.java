@@ -16,9 +16,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /*
- * Uses the QueryProcessor, which doesn't need
- * the server to be open.
- * 
+ * this class may be used to build reports later on.
+ * currently not in use.
  */
 public class ASTCheckRunner {
 	private XmlStore xstore = null;

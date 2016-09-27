@@ -1,7 +1,5 @@
 (:~ 
-   
    We're computing variable name usage.
- 
 :)
 
 let $partial :=
