@@ -30,6 +30,20 @@ declare function local:fcalls() {
     return $partial
 };
 
+
+(:~ 
+  Here, we check the nature of the strings in programs.
+  We're looking for base64 strings or hexliterals
+  
+  reference for the b64 regex: http://stackoverflow.com/a/8571649/827519
+  
+  TODO: add support for detecting gzipped strings
+    reference for gzinflate detection:
+    - https://tools.ietf.org/html/rfc1950#page-4
+    - http://stackoverflow.com/a/29268776/827519
+
+  Timing: takes 4.6 seconds when BaseX has 7338 documents
+:)
 declare function local:strings() {
     let $re_b64   := "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$"
     let $re_hex   := "((?:\\x[a-zA-Z0-9]{2})+)"

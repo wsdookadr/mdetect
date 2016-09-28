@@ -85,19 +85,8 @@ entire Joomla 3.6.2 codebase :
 Additional note: Parsing certain large PHP files (1MB in size) was found
 to cause a memory usage of 4GB.
 
-Currently, some checks are available in `resources/` in the form of `XQuery` programs.
-For example, you may run the following check for function call usage:
-
-    ./deps/basexclient -U admin -P admin -p 1984 ./resources/fcall_check.xql
-
-This will provide information about function names and the number of
-calls, for each file that is stored in `BaseX`.  The server should
-be started for this query to work (the server runner program is in
-`./deps/basexserver`).
-
-You may also run `./deps/basexgui` (doesn't require the server to be
-started) which will bring up a GUI including an editor where you can
-run custom XQuery queries.
+You may run `./deps/basexgui` which will bring up a GUI including an
+editor where you can run custom XQuery queries.
 
 Contributing
 ============
