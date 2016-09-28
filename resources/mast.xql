@@ -1,4 +1,5 @@
 (:~
+  MAST1 (recursive bottom-up)
 
   This transformation will build a MAST(Merkleized abstract syntax tree)
   We'll use this later on in order to identify matching portions of
@@ -16,6 +17,29 @@
   [1] https://hal.archives-ouvertes.fr/hal-00627811/document
   [2] http://www.mit.edu/~jlrubin/public/pdfs/858report.pdf
     
+    
+  MAST2 implementation (second version, non-recursive bottom-up, addressing memory issues)
+  
+  For a large parse tree of max depth 1957 and 13269 nodes
+  the previous implementation will exit with "Out of main memory".
+  Because of that, a non-recursive bottom-up approach is needed.
+  Starting from the leaf nodes, at each stage, we maintain an array
+  of items. We maintain a list of counts too for the next parent, and we
+  increment it each time. We only advance to it if the count is previously c-1
+  where c is the number of children for that parent (meaning, all the other
+  children are ready, and with the current one, that means all children are ready
+  to advance).
+  To keep track of the nodes, BaseX provides the function db:node-id.
+  On the other hand, we'll need some arrays and maps(dictionaries), and the XQuery
+  standard provides those too [2], and BaseX implements those [3].
+  This updating will be done until the root is reached. Along the way, the list of
+  nodes that we need to keep up-to-date will shrink in size, reaching size 1
+  when it reaches the root element.
+  
+  [1] https://mailman.uni-konstanz.de/pipermail/basex-talk/2011-January/001072.html
+  [2] https://www.w3.org/TR/xpath-functions-31/#maps-and-arrays
+  [3] http://docs.basex.org/wiki/Map_Module
+  
 :)
 
 declare function local:mast($node, $d) {
