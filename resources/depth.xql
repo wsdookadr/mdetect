@@ -84,8 +84,20 @@ declare function local:tpfr($r as node()?) {
       let $ma := $chain ! db:node-id(.)
       (: return them in separate arrays (keeping all the chains separate) :)
       return array {$ma}
-  let $pids := distinct-values($ids ! fn:data(.))
+  (:
+    the same chains but with node-names instead of node ids
+  :)
+  let $nids := $ids ! (
+    let $i := .
+    let $unpacked := fn:data($i)
+    return
+      (: open nodes in chains again to get their names :)
+      if(count($unpacked) > 1)
+      then [ $unpacked ! db:open-id("xtrees",.)/node-name() ]
+      else ()
+  )
   (: ids planned for removal (avoiding double-usage) :)
+  let $pids := distinct-values($ids ! fn:data(.))
   return $pids
 };
 
@@ -100,7 +112,10 @@ let $cl  := $r//* ! count(local:lscc(.))
 (: get maximum lscc length :)
 let $mcl := max($cl)
 (: total nodes that would be planned for removal :)
+
+
 let $tpr := count(local:tpfr($r))
+
 return
   <result>
   <depth>{$md}</depth>
