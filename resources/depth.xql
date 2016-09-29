@@ -48,7 +48,8 @@ declare function local:max-len-chain($root as node()?) as xs:integer? {
 
 (: 
   get the longest single-child chain starting at this node
-  and going up to the root
+  and going up to the root (stopping somewhere along the way
+  if a multi-child node is found).
   
   http://docs.basex.org/wiki/Higher-Order_Functions_Module#hof:take-while
 :)
@@ -65,12 +66,13 @@ declare function local:lscc($n as node()?) {
 };
 
 
-(: tpfr(stands for "total planned for removal")
+(: 
+   tpfr(stands for "total planned for removal")
 
    this works like local:lscc and produces all chains.
-   however, some chains will be included in others, so
-   it gets distinct values at the end
-   to avoid double-counting
+   some of the chains in $ids might be sub-chains of other ones.
+   so it gets distinct values at the end to avoid double-counting
+   later on.
 :)
 declare function local:tpfr($r as node()?) {
   let $ids := 
