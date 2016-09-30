@@ -28,6 +28,26 @@ import org.w3c.dom.Element;
 /*
  * TODO: add offset-based start/end for each node.
  * 		 http://www.antlr.org/api/JavaTool/org/antlr/v4/runtime/ParserRuleContext.html
+ * 
+ * TODO: add partial matches for b64 and hexliteral. this should add attributes
+ * 	 	 if a node is a potential part of a b64/hexliteral string.
+ * 		 include case in which node might start and end with quotes.
+ * 		 also have information about the size of the b64/hexliteral strings
+ * 		 in attributes.
+ * 
+ * TODO: move most matching logic from local:strings here and equip the parse tree
+ * 		 with it before inserting into the database.
+ * 
+ * TODO: store metadata about the size of the file directly in the parse tree.
+ * 
+ * TODO: N={assignmentOperator,actualArgument}
+ * 		 keep a buffer for strings collected from nodes in N
+ * 		 (actually already available via .getTextContent())
+ * 		 
+ * 		 Then check the longest b64/hexliteral in those strings upon
+ * 		 exiting the nodes in N.
+ * 
+ * 
  */
 
 public class ParseTreeDOMSerializer implements ParseTreeListener {
@@ -96,6 +116,7 @@ public class ParseTreeDOMSerializer implements ParseTreeListener {
 			System.out.println("exit->" + ruleName);
 		}
         nodeStack.pop();
+        //nodeStack.peek().getTextContent();
     }
 
     @Override

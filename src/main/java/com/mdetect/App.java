@@ -83,10 +83,10 @@ public class App {
 		return cmdLineParams;
 	}
 	
-	 public static void acquireChecksums(
-			 String knownFilesPath,
-			 XmlStore xstore,
-			 SqliteStore sq) {
+	public static void acquireChecksums(String knownFilesPath) {
+		SqliteStore sq = new SqliteStore();
+		XmlStore xstore = new XmlStore();
+		sq.createSchema();
 		/* 
 		 * retrieve checksums and metadata for a set of files
 		 * and store their checksums and metadata in the sqlite
@@ -112,12 +112,13 @@ public class App {
 		if (added > 0) {
 			sq.commit();
 		}
+		xstore.stopServer();
 	}
 
-	public static void analyzeCodeStructure(
-			String pathToAnalyze,
-			XmlStore xstore,
-			SqliteStore sq) {
+	public static void analyzeCodeStructure(String pathToAnalyze) {
+		SqliteStore sq = new SqliteStore();
+		XmlStore xstore = new XmlStore();
+		sq.createSchema();
 		/* parse and store parse trees in the xml store */
 		ArrayList<String> toAnalyze = (ArrayList<String>) FileScanUtils.findFilesToAnalyze(pathToAnalyze);
 		AnalyzeTimedTaskQueue tq = new AnalyzeTimedTaskQueue(3, xstore, "/unknown/");
@@ -128,15 +129,16 @@ public class App {
 		}
 		tq.close();
 		tq.printPerfReport();
+		xstore.stopServer();
 	}
 	
-	public static void report(XmlStore xstore) {
+	public static void report() {
 		try {
+			XmlStore xstore = new XmlStore();
 			xstore.stopServer();
-			System.out.println(xstore.eval(Utils.getResource("/report.xql")));
-		} catch (QueryException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+			ArrayList<String> report = xstore.eval(Utils.getResource("/report.xql"));
+			System.out.println(report);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -144,20 +146,14 @@ public class App {
 	public static void main(String[] args) throws Exception {
 		BasicConfigurator.configure();
 		Map<String, String> cmdLineParams = parseCmdLineParams(args);
-		SqliteStore sq = new SqliteStore();
-		XmlStore xstore = new XmlStore();
-		sq.createSchema();
-
 		if(cmdLineParams.containsKey("detectPath")) {
 			String path = cmdLineParams.get("detectPath");
-			analyzeCodeStructure(path,xstore,sq);
-			xstore.stopServer();
+			analyzeCodeStructure(path);
 		} else if(cmdLineParams.containsKey("checkPath")) {
 			String path = cmdLineParams.get("checkPath");
-			acquireChecksums(path,xstore,sq);
-			xstore.stopServer();
+			acquireChecksums(path);
 		} else if(cmdLineParams.containsKey("report")) {
-			report(xstore);
+			//report();
 		}
 		
 		System.exit(0);

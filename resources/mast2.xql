@@ -36,6 +36,42 @@ but should not cause memory problems anymore.
 
 :)
 
-""
 
+declare function local:max-depth($root as node()?) as xs:integer? {
+   if($root/*)
+   then max($root/*/local:max-depth(.)) + 1
+   else 1
+};
 
+declare function local:next-level($els as xs:integer*) as xs:integer* {
+  (: get parents ids :)
+  let $par :=
+    for $e in fn:data($els)
+      return db:node-id(db:open-id("xtrees", $e)/..)
+  let $dpar := distinct-values($par)
+  return $dpar
+};
+
+(: enumerate all the levels :)
+declare function local:f($d, $l) {
+  let $n := local:next-level($l)
+  return
+  if($d=1)
+  then ()
+  else ([$n],local:f($d - 1,$n))
+};
+
+(: get the root :)
+let $r := db:open("xtrees","unknown/home/user/work/mdetect/samples/sample.php")/node()
+(: get max depth :)
+let $depth := local:max-depth($r)
+(: getting leafs :)
+let $leafs := $r//*[count(*)=0] ! db:node-id(.)
+(: getting all the node ids for each level :)
+let $levels := local:f($depth, $leafs)
+
+let $z1 := file:write("/tmp/res.txt","")
+for $line in reverse($levels)
+  let $z2  := file:append-text("/tmp/res.txt",fn:serialize(fn:data($line)))
+  let $z3 := file:append-text("/tmp/res.txt","\\n")
+return ""
