@@ -19,7 +19,7 @@ Query executed in 0.52 ms.
 > 
 :END:
 
-* Thoughts about a limited PHP interpretor
+* Thoughts about a limited PHP interpreter
 
 
 

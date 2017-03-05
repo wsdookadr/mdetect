@@ -10,7 +10,7 @@ contains logic that might be malicious.
 
 The high-level use-cases for this tool are the following:
 - in the aftermath of a break-in, for cleanup purposes
-- as a periodic check of existing code on a machine, to assess the existance
+- as a periodic check of existing code on a machine, to assess the existence
   of potentially suspicious behaviour
 
 The more specific use-cases are:
